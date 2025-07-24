@@ -1,23 +1,75 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
 public class BallSystem : MonoBehaviour
 {
-    [Header("")]
+    [Header("Shot parameter")]
     [SerializeField] private float shootAngle = 45f;
     [SerializeField] private float gravity = 9.81f;
     [SerializeField] private Transform hopperTransform;
+    [SerializeField] private Transform backBoardTransform;
+
+    [Header("Ball value")]
+    [SerializeField] private Vector3 startPos;
+    [SerializeField] private Quaternion startRot;
 
     private Rigidbody rig;
+    public event Action OnBallHitFloor;
 
-    [ContextMenu("Test")]
-    public void ShootBall()
+
+    private void Start()
     {
+        startPos = transform.position;
+        startRot = transform.rotation;
         rig = GetComponent<Rigidbody>();
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.transform.CompareTag("Floor"))
+        {
+            ResetPos();
+            OnBallHitFloor?.Invoke();
+        }
+    }
+
+    [ContextMenu("ShootBall")]
+    public void PerfectShootBall()
+    {
         rig.velocity = Vector3.zero;
         rig.angularVelocity = Vector3.zero;
 
         Vector3 velocity = CalculateVelocity(hopperTransform.position, transform.position, shootAngle);
+        rig.AddForce(velocity, ForceMode.VelocityChange);
+    }
+
+    public void ShootBall(ShotType shotType)
+    {
+        rig.velocity = Vector3.zero;
+        rig.angularVelocity = Vector3.zero;
+
+        Vector3 targetPos = hopperTransform.position;
+
+        switch (shotType)
+        {
+            case ShotType.NotReach:
+                targetPos += (Vector3.right * 2);
+                break;
+            case ShotType.PerfectShot:
+                targetPos = hopperTransform.position;
+                break;
+            case ShotType.HighShot:
+                targetPos = backBoardTransform.position * 1.2f;
+                break;
+            case ShotType.TooHigh:
+                targetPos = backBoardTransform.position + (backBoardTransform.up * 0.8f);
+                break;
+            default:
+                break;
+        }
+
+        Vector3 velocity = CalculateVelocity(targetPos, transform.position, shootAngle);
         rig.AddForce(velocity, ForceMode.VelocityChange);
     }
 
@@ -43,5 +95,13 @@ public class BallSystem : MonoBehaviour
         result.y = velocityMagnitude * Mathf.Sin(radianAngle);
 
         return result;
+    }
+
+    private void ResetPos()
+    {
+        rig.velocity = Vector3.zero;
+        rig.angularVelocity = Vector3.zero;
+        transform.position = startPos;
+        transform.rotation = startRot;
     }
 }

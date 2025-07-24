@@ -12,9 +12,6 @@ public class FillBarSystem : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.Instance.gameState != GameState.Playing)
-            return;
-
         UpdateFillAmountFromInput();
         UpdateIndicatorPosition();
     }
@@ -75,10 +72,13 @@ public class FillBarSystem : MonoBehaviour
             float normalized = Mathf.Clamp01(distance / 2400f);
 
             if (normalized > fillImage.fillAmount)
-            {
                 fillImage.fillAmount = normalized;
-            }
         }
+    }
+
+    public void ResetValue()
+    {
+        fillImage.fillAmount = 0;
     }
 
     public float GetFillAmount() =>

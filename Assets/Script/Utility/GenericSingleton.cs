@@ -9,16 +9,8 @@ public class GenericSingleton<T> : MonoBehaviour where T : Component
         get
         {
             if (instance == null)
-            {
                 instance = FindObjectOfType<T>();
 
-                if (instance == null)
-                {
-                    GameObject obj = new GameObject();
-                    obj.name = typeof(T).Name;
-                    instance = obj.AddComponent<T>();
-                }
-            }
             return instance;
         }
     }
@@ -28,11 +20,7 @@ public class GenericSingleton<T> : MonoBehaviour where T : Component
         if (instance == null)
         {
             instance = this as T;
-            DontDestroyOnLoad(this.gameObject);
-        }
-        else
-        {
-            Destroy(gameObject);
+            DontDestroyOnLoad(gameObject);
         }
     }
 }

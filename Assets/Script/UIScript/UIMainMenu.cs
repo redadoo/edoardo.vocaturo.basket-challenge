@@ -47,7 +47,7 @@ public class UIMainMenu : MonoBehaviour, IDataPersistence
         currentPage = newPage;
 
         if (currentPage == MenuPage.LoadGame)
-            LoadingScene.Instance.LoadScene(1);
+            LoadingSceneManager.Instance.LoadScene(Scene.Gameplay);
         
         playerModel.SetActive(currentPage == MenuPage.Main);
         backButton.gameObject.SetActive(currentPage != MenuPage.Main);
@@ -97,4 +97,20 @@ public class UIMainMenu : MonoBehaviour, IDataPersistence
         data.money = money;
         data.gold = gold;
     }
+
+    #region Editor function
+
+    [ContextMenu("ChangePageToMain")]
+    private void ChangePageToMain() =>
+        ChangeMenuPage(MenuPage.Main);
+
+    [ContextMenu("ChangePageToGameType")]
+    private void ChangePageToGameType() =>
+        ChangeMenuPage(MenuPage.SelectGameType);
+
+    [ContextMenu("ChangePageToCampType")]
+    private void ChangePageToCampType() =>
+        ChangeMenuPage(MenuPage.SelectCampType);
+
+    #endregion
 }
