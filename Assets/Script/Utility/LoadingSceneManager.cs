@@ -1,6 +1,5 @@
 using UnityEngine.SceneManagement;
 using System.Collections;
-using UnityEngine.UI;
 using UnityEngine;
 using System;
 
@@ -13,30 +12,32 @@ public enum Scene
 public class LoadingSceneManager : PersistentSingleton<LoadingSceneManager>
 {
     [SerializeField] private Scene currentScene;
-    [SerializeField] private Image LoadingBar;
-
+    [SerializeField] private bool isLoading = false;
     public event EventHandler<Scene> OnSceneChange;
 
     public void LoadScene(Scene scene)
     {
+        if (isLoading)
+        {
+            Debug.LogWarning("A scene is already loading");
+            return;
+        }
+
         StartCoroutine(LoadSceneAsync(scene));
     }
 
     IEnumerator LoadSceneAsync(Scene scene)
     {
+        isLoading = true;
+
         int sceneId = (int)scene;
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneId);
-        
-        //LoadingScreen.SetActive(true);
 
         while (!operation.isDone) 
-        {
-            //float progressValue = Mathf.Clamp01(operation.progress / 0.9f);
-            //LoadingBar.fillAmount = progressValue;
             yield return null;
-        }
 
         currentScene = scene;
         OnSceneChange?.Invoke(this, currentScene);
+        isLoading = false;
     }
 }

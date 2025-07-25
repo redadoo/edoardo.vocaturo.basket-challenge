@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class PersistentSingleton<T> : MonoBehaviour where T : Component
 {
+    [Header("PersistentSingleton Settings")]
     public bool autoUnparentOnAwake = true;
 
     protected static T instance;

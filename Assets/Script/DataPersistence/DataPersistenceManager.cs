@@ -1,7 +1,9 @@
+using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using System.Collections.Generic;
-public class DataPersistenceManager : MonoBehaviour
+
+
+public class DataPersistenceManager : PersistentSingleton<DataPersistenceManager>
 {
     [Header("File Storage Config")]
     [SerializeField] private string fileName;
@@ -11,20 +13,7 @@ public class DataPersistenceManager : MonoBehaviour
     private GameData gameData;
 
     private List<IDataPersistence> dataPersistenceObjects;
-    public static DataPersistenceManager Instance { get; private set; }
     private FileDataHandler dataHandler;
-
-    private void Awake()
-    {
-        if (save)
-        {
-            if (Instance != null)
-            {
-                Debug.LogError("Found more than one Data Persistence Manager in the scene.");
-            }
-            Instance = this;
-        }
-    }
 
     public void Start()
     {
