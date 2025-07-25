@@ -10,9 +10,8 @@ public enum Scene
     Gameplay
 }
 
-public class LoadingSceneManager : GenericSingleton<LoadingSceneManager>
+public class LoadingSceneManager : PersistentSingleton<LoadingSceneManager>
 {
-    //[SerializeField] private GameObject LoadingScreen;
     [SerializeField] private Scene currentScene;
     [SerializeField] private Image LoadingBar;
 

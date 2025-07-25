@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
 
-public class InputManager : GenericSingleton<InputManager>
+public class InputManager : PersistentSingleton<InputManager>
 {
     public PlayerInputMap inputActions;
 

@@ -1,7 +1,12 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEditor.U2D.Path;
 using UnityEngine;
 
-public class GenericSingleton<T> : MonoBehaviour where T : Component
+public class PersistentSingleton<T> : MonoBehaviour where T : Component
 {
+    public bool autoUnparentOnAwake = true;
+
     protected static T instance;
 
     public static bool HasInstance => instance != null;
@@ -11,7 +16,7 @@ public class GenericSingleton<T> : MonoBehaviour where T : Component
     {
         get
         {
-            if(instance == null)
+            if (instance == null)
             {
                 instance = FindObjectOfType<T>();
                 if (instance == null)
@@ -33,6 +38,19 @@ public class GenericSingleton<T> : MonoBehaviour where T : Component
     {
         if (!Application.isPlaying) return;
 
-        instance = this as T;
+        if (autoUnparentOnAwake)
+            transform.SetParent(null);
+
+        if (instance == null)
+        {
+            instance = this as T;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            if (instance != this)
+                Destroy(gameObject);
+        }
+
     }
 }

@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-public class GameManager : GenericSingleton<GameManager>
+public class GameManager : PersistentSingleton<GameManager>
 {
     private void Start()
     {
