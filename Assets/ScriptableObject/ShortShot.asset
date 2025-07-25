@@ -15,7 +15,7 @@ MonoBehaviour:
   perfectMin: 0.4
   perfectMax: 0.5
   perfectShotAngle: 70
-  tolerance: 0.1
-  highMin: 0.55
-  highMax: 0.6
+  tolerance: 0.05
+  highMin: 0.6
+  highMax: 0.65
   highShotAngle: 80

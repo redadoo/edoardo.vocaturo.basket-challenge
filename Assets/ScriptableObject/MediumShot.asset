@@ -14,6 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   perfectMin: 0.5
   perfectMax: 0.6
-  tolerance: 0.1
+  perfectShotAngle: 0
+  tolerance: 0.05
   highMin: 0.65
   highMax: 0.7
+  highShotAngle: 0

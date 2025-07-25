@@ -40,13 +40,13 @@ public class ShotInfoSO : ScriptableObject
     /// <returns>Corresponding ShotType.</returns>
     public ShotType GetShotType(float fillValue)
     {
-        if (fillValue < perfectMin)
+        if (fillValue < (perfectMin - tolerance))
             return ShotType.NotReach;
 
         if (fillValue >= (perfectMin - tolerance) && fillValue <= (perfectMax + tolerance))
             return ShotType.PerfectShot;
 
-        if (fillValue > perfectMax && fillValue < highMin)
+        if (fillValue > (perfectMax + tolerance) && fillValue < highMin)
             return ShotType.TooHigh;
 
         if (fillValue >= highMin && fillValue <= highMax)

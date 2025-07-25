@@ -15,12 +15,21 @@ public class GenericSingleton<T> : MonoBehaviour where T : Component
         }
     }
 
+    [SerializeField]
+    private bool dontDestroyOnLoad = false;
+
     public virtual void Awake()
     {
         if (instance == null)
         {
             instance = this as T;
-            DontDestroyOnLoad(gameObject);
+
+            if (dontDestroyOnLoad)
+                DontDestroyOnLoad(gameObject);
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
         }
     }
 }

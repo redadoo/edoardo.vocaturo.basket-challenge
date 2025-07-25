@@ -45,7 +45,6 @@ public class ShootingSystem : GenericSingleton<ShootingSystem>
         if (backBoardTrigger != null)
             backBoardTrigger.OnTriggered += OnBackBoardTriggered;
 
-
         if (ballSystem != null)
             ballSystem.OnBallHitFloor += OnBallHitFloor;
 

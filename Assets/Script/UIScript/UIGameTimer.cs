@@ -1,8 +1,9 @@
 using System.Collections;
-using UnityEngine;
+using System;
 using UnityEngine.UI;
+using UnityEngine;
 
-public class UIGameTimer : MonoBehaviour
+public class UIGameTimer : GenericSingleton<UIGameTimer>
 {
     [Header("Image reference")]
     [SerializeField] private Image playerTimer;
@@ -12,10 +13,12 @@ public class UIGameTimer : MonoBehaviour
     [SerializeField] private float timer = 0f;
     [SerializeField] private float duration = 60f;
     [SerializeField] private float alertTime = 10f;
-    [SerializeField] private float flashInterval = 0.5f;
     [SerializeField] private bool isFlashing = false;
+    [SerializeField] private float flashInterval = 0.5f;
     [SerializeField] private Color alertColor = Color.red;
     [SerializeField] private Color startColor = Color.green;
+
+    public event Action OnGameEnd;
 
     void Start()
     {
@@ -42,6 +45,10 @@ public class UIGameTimer : MonoBehaviour
                 StartCoroutine(FlashColor());
                 isFlashing = true;
             }
+        }
+        else
+        {
+            OnGameEnd?.Invoke();
         }
     }
 

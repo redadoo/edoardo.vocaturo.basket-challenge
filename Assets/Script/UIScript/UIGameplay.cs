@@ -18,7 +18,6 @@ public class UIGameplay : GenericSingleton<UIGameplay>
     [SerializeField] private TMP_Text playerScore;
     [SerializeField] private TMP_Text enemyScore;
 
-
     [Header("Cooldown")]
     [SerializeField] private GameObject countdownGameObject;
     [SerializeField] private TextMeshProUGUI countdownText;

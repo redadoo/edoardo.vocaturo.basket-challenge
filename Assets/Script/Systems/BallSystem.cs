@@ -13,7 +13,7 @@ public class BallSystem : MonoBehaviour
     [Header("Ball value")]
     [SerializeField] private Vector3 startPos;
     [SerializeField] private Quaternion startRot;
-
+    [SerializeField] private bool isFirst = true;
     private Rigidbody rig;
     public event Action OnBallHitFloor;
 
@@ -27,20 +27,37 @@ public class BallSystem : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.transform.CompareTag("Floor"))
+        if (!isFirst)
         {
-            ResetPos();
-            OnBallHitFloor?.Invoke();
+            if (collision.transform.CompareTag("Floor"))
+            {
+                ResetPos();
+                OnBallHitFloor?.Invoke();
+            }
+        }
+        else
+        {
+            isFirst = false;
         }
     }
 
-    [ContextMenu("ShootBall")]
+    [ContextMenu("PerfectShootBall")]
     public void PerfectShootBall()
     {
         rig.velocity = Vector3.zero;
         rig.angularVelocity = Vector3.zero;
 
         Vector3 velocity = CalculateVelocity(hopperTransform.position, transform.position, shootAngle);
+        rig.AddForce(velocity, ForceMode.VelocityChange);
+    }
+
+    [ContextMenu("ShootBall")]
+    public void HighShootBall()
+    {
+        rig.velocity = Vector3.zero;
+        rig.angularVelocity = Vector3.zero;
+
+        Vector3 velocity = CalculateVelocity(backBoardTransform.position, transform.position, shootAngle);
         rig.AddForce(velocity, ForceMode.VelocityChange);
     }
 
@@ -60,7 +77,7 @@ public class BallSystem : MonoBehaviour
                 targetPos = hopperTransform.position;
                 break;
             case ShotType.HighShot:
-                targetPos = backBoardTransform.position * 1.2f;
+                targetPos = backBoardTransform.position;
                 break;
             case ShotType.TooHigh:
                 targetPos = backBoardTransform.position + (backBoardTransform.up * 0.8f);
