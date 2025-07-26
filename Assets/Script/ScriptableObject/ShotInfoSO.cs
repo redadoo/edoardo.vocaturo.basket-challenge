@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 public enum ShotType
 {
@@ -33,6 +34,9 @@ public class ShotInfoSO : ScriptableObject
     [Tooltip("Angle for shot a high shot")]
     public float highShotAngle;
 
+    [Tooltip("Position avaible for this shot")]
+    public List<GameObject> shotPositions;
+
     /// <summary>
     /// Returns the ShotType for the given fill value, considering tolerance.
     /// </summary>
@@ -49,7 +53,7 @@ public class ShotInfoSO : ScriptableObject
         if (fillValue > (perfectMax + tolerance) && fillValue < highMin)
             return ShotType.TooHigh;
 
-        if (fillValue >= highMin && fillValue <= highMax)
+        if (fillValue >= (highMin - tolerance) && fillValue <= (highMax + tolerance))
             return ShotType.HighShot;
 
         return ShotType.TooHigh;

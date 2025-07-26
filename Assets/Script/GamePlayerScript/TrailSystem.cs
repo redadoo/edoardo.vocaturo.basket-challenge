@@ -5,8 +5,8 @@ public class TrailSystem : MonoBehaviour
     [SerializeField] private TrailRenderer trailRenderer;
     [SerializeField] private Camera mainCamera;
 
-    private const float TrailXPosition = -7f;
-    private bool isActive = true;
+    private const float TrailXPosition = 5f;
+    private bool isActive = false;
 
     private void Awake()
     {
@@ -16,29 +16,12 @@ public class TrailSystem : MonoBehaviour
             mainCamera = Camera.main;
     }
 
-    private void OnEnable()
-    {
-        if (ShootingSystem.Instance != null)
-            ShootingSystem.Instance.OnTimerEnd += OnTimerEnd;
-    }
-
-    private void OnDisable()
-    {
-        if (ShootingSystem.Instance != null)
-            ShootingSystem.Instance.OnTimerEnd -= OnTimerEnd;
-    }
-
-    private void OnTimerEnd()
-    {
-        isActive = false;
-        if (trailRenderer != null)
-            trailRenderer.emitting = false;
-    }
-
     private void Update()
     {
-        if (isActive)
-            UpdateTrailPosition();
+        if (!isActive)
+            return;
+        
+        UpdateTrailPosition();
     }
 
     private void UpdateTrailPosition()
@@ -48,13 +31,18 @@ public class TrailSystem : MonoBehaviour
 
         Vector2 screenPos = InputManager.Instance.touchPos;
         float depth = Mathf.Abs(mainCamera.transform.position.x - TrailXPosition);
-
         Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, depth));
-        worldPos.x = TrailXPosition;
 
         trailRenderer.transform.position = worldPos;
 
         if (!trailRenderer.emitting)
             trailRenderer.emitting = true;
+    }
+
+    public void ChangeTrailState(bool isTrailActive)
+    {
+        isActive = isTrailActive;
+        if (trailRenderer != null)
+            trailRenderer.emitting = isTrailActive;
     }
 }

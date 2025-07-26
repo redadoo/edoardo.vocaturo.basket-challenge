@@ -14,8 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   perfectMin: 0.4
   perfectMax: 0.5
-  perfectShotAngle: 70
+  perfectShotAngle: 80
   tolerance: 0.05
   highMin: 0.6
   highMax: 0.65
   highShotAngle: 80
+  shotPositions:
+  - {fileID: 2892202847558421512, guid: a065900f407b44943b164b35bad485f0, type: 3}
+  - {fileID: 4888617164894012932, guid: 9521701d13db7d1478ab4a1913f44e42, type: 3}
+  - {fileID: 1015056535792149947, guid: 050f43f8d3adfe348936619627424091, type: 3}

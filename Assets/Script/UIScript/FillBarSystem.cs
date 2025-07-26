@@ -37,23 +37,24 @@ public class FillBarSystem : MonoBehaviour
     /// <summary>
     /// Displays shot range indicators at the appropriate fill levels.
     /// </summary>
-    public void SetShotRange(float perfectShotStart, float highShotStart)
+    public void SetShotRange(ShotInfoSO shotInfo)
     {
-        if (perfectShotImage != null)
-        {
-            perfectShotImage.gameObject.SetActive(true);
-            perfectShotImage.anchoredPosition = new Vector2(
-                perfectShotImage.anchoredPosition.x,
-                GetYFromFillAmount(perfectShotStart)
-            );
-        }
 
         if (highShotImage != null)
         {
             highShotImage.gameObject.SetActive(true);
             highShotImage.anchoredPosition = new Vector2(
                 highShotImage.anchoredPosition.x,
-                GetYFromFillAmount(highShotStart)
+                GetYFromFillAmount(shotInfo.highMin)
+            );
+        }
+
+        if (perfectShotImage != null)
+        {
+            perfectShotImage.gameObject.SetActive(true);
+            perfectShotImage.anchoredPosition = new Vector2(
+                perfectShotImage.anchoredPosition.x,
+                GetYFromFillAmount(shotInfo.perfectMin)
             );
         }
     }

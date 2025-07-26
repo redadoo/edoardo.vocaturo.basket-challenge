@@ -14,8 +14,12 @@ public class BallSystem : MonoBehaviour
     [SerializeField] private Vector3 startPos;
     [SerializeField] private Quaternion startRot;
     [SerializeField] private bool isFirst = true;
+    
     private Rigidbody rig;
+
     public event Action OnBallHitFloor;
+    public event Action OnBallScored;
+    public event Action OnBackboardHit;
 
 
     private void Start()
@@ -36,9 +40,15 @@ public class BallSystem : MonoBehaviour
             }
         }
         else
-        {
             isFirst = false;
-        }
+    }
+
+    private void OnTriggerEnter(Collider collision)
+    {
+        if (collision.transform.CompareTag("Basket"))
+            OnBallScored?.Invoke();
+        else if(collision.transform.CompareTag("Backboard"))
+            OnBackboardHit?.Invoke();
     }
 
     [ContextMenu("PerfectShootBall")]
@@ -61,32 +71,43 @@ public class BallSystem : MonoBehaviour
         rig.AddForce(velocity, ForceMode.VelocityChange);
     }
 
-    public void ShootBall(ShotType shotType)
+    public void ShootBall(ShotType shotType, ShotInfoSO shotInfo)
     {
         rig.velocity = Vector3.zero;
         rig.angularVelocity = Vector3.zero;
+        startPos = transform.position;
 
         Vector3 targetPos = hopperTransform.position;
+        float shotAngle = shotInfo.perfectShotAngle;
 
         switch (shotType)
         {
             case ShotType.NotReach:
-                targetPos += (Vector3.right * 2);
+                targetPos += Vector3.down * 2f;
+                shotAngle = shotInfo.perfectShotAngle;
                 break;
             case ShotType.PerfectShot:
                 targetPos = hopperTransform.position;
+                shotAngle = shotInfo.perfectShotAngle;
                 break;
             case ShotType.HighShot:
                 targetPos = backBoardTransform.position;
+                shotAngle = shotInfo.highShotAngle;
                 break;
             case ShotType.TooHigh:
-                targetPos = backBoardTransform.position + (backBoardTransform.up * 0.8f);
+                targetPos = backBoardTransform.position + (backBoardTransform.up * 0.9f);
+                shotAngle = shotInfo.perfectShotAngle;
                 break;
             default:
                 break;
         }
 
-        Vector3 velocity = CalculateVelocity(targetPos, transform.position, shootAngle);
+        print($"shot of type {shotType} at {targetPos} with angle {shotAngle}");
+
+        Vector3 velocity = CalculateVelocity(targetPos, transform.position, shotAngle);
+
+        print($"asdss velotic {velocity}");
+
         rig.AddForce(velocity, ForceMode.VelocityChange);
     }
 

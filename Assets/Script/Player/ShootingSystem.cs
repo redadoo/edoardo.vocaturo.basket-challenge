@@ -30,46 +30,48 @@ public class ShootingSystem : GenericSingleton<ShootingSystem>
 
     private void Start()
     {
-        if (InputManager.Instance != null)
-        {
-            InputManager.Instance.OnClickStartNotOverUI += OnClickStartNotOverUI;
-            InputManager.Instance.OnClickCanceledNotOverUI += OnClickCanceledNotOverUI;
-        }
+        //if (InputManager.Instance != null)
+        //{
+        //    InputManager.Instance.OnClickStartNotOverUI += OnClickStartNotOverUI;
+        //    InputManager.Instance.OnClickCanceledNotOverUI += OnClickCanceledNotOverUI;
+        //}
 
-        if (UIGameplay.Instance != null)
-            UIGameplay.Instance.OnCooldownEnd += OnCooldownEnd;
+        //if (UIGameplay.Instance != null)
+        //    UIGameplay.Instance.OnCooldownEnd += OnCooldownEnd;
 
-        if (basketTrigger != null)
-            basketTrigger.OnTriggered += OnBasketEnter;
+        //if (basketTrigger != null)
+        //    basketTrigger.OnTriggered += OnBasketEnter;
 
-        if (backBoardTrigger != null)
-            backBoardTrigger.OnTriggered += OnBackBoardTriggered;
+        //if (backBoardTrigger != null)
+        //    backBoardTrigger.OnTriggered += OnBackBoardTriggered;
 
-        if (ballSystem != null)
-            ballSystem.OnBallHitFloor += OnBallHitFloor;
+        //if (ballSystem != null)
+        //    ballSystem.OnBallHitFloor += OnBallHitFloor;
 
         InitializeGame();
     }
 
     private void OnDestroy()
     {
-        if (InputManager.Instance != null)
-        {
-            InputManager.Instance.OnClickStartNotOverUI -= OnClickStartNotOverUI;
-            InputManager.Instance.OnClickCanceledNotOverUI -= OnClickCanceledNotOverUI;
-        }
+        //InputManager inputManager = InputManager.TryGetInstance();
+        //if (inputManager != null)
+        //{
+        //    inputManager.OnClickStartNotOverUI -= OnClickStartNotOverUI;
+        //    inputManager.OnClickCanceledNotOverUI -= OnClickCanceledNotOverUI;
+        //}
 
-        if (UIGameplay.Instance != null)
-            UIGameplay.Instance.OnCooldownEnd -= OnCooldownEnd;
+        //UIGameplay uIGameplay = UIGameplay.TryGetInstance();
+        //if (uIGameplay != null)
+        //    uIGameplay.OnCooldownEnd -= OnCooldownEnd;
 
-        if (basketTrigger != null)
-            basketTrigger.OnTriggered -= OnBasketEnter;
+        //if (basketTrigger != null)
+        //    basketTrigger.OnTriggered -= OnBasketEnter;
 
-        if (backBoardTrigger != null)
-            backBoardTrigger.OnTriggered -= OnBackBoardTriggered;
+        //if (backBoardTrigger != null)
+        //    backBoardTrigger.OnTriggered -= OnBackBoardTriggered;
 
-        if (ballSystem != null)
-            ballSystem.OnBallHitFloor -= OnBallHitFloor;
+        //if (ballSystem != null)
+        //    ballSystem.OnBallHitFloor -= OnBallHitFloor;
     }
     private void Update()
     {
@@ -132,7 +134,7 @@ public class ShootingSystem : GenericSingleton<ShootingSystem>
     private void SetShotRange(int positionIndex)
     {
         var range = shotRanges[positionIndex];
-        fillBarSystem.SetShotRange(range.perfectMin, range.highMin);
+        //fillBarSystem.SetShotRange(range.perfectMin, range.highMin);
     }
 
     private void OnClickStartNotOverUI()
@@ -143,20 +145,19 @@ public class ShootingSystem : GenericSingleton<ShootingSystem>
 
     private void OnClickCanceledNotOverUI()
     {
-        if (!isPossibleToShoot)
-            return;
+        //if (!isPossibleToShoot)
+        //    return;
 
-        isPossibleToShoot = false;
-        currentTimer = timerDuration;
+        //isPossibleToShoot = false;
+        //currentTimer = timerDuration;
 
-        lastShotType = shotRanges[currentPositionIndex].GetShotType(fillBarSystem.GetFillAmount());
-        print($" shotType is {lastShotType}");
+        //lastShotType = shotRanges[currentPositionIndex].GetShotType(fillBarSystem.GetFillAmount());
+        //print($" shotType is {lastShotType}");
 
-        ballSystem.ShootBall(lastShotType);
+        //ballSystem.ShootBall(lastShotType);
     }
     private void OnCooldownEnd()
     {
         isPossibleToShoot = true;
     }
-
 }
