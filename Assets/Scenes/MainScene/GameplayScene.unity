@@ -733,6 +733,7 @@ MonoBehaviour:
   points: 0
   fillBarSystem: {fileID: 508801587}
   trailSystem: {fileID: 575155476}
+  isPressed: 0
   isTimerRunning: 0
   timerDuration: 1
   currentTimer: 0
@@ -1463,7 +1464,7 @@ GameObject:
   - component: {fileID: 460915629}
   - component: {fileID: 460915628}
   - component: {fileID: 460915627}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: PlayerBall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1818,6 +1819,7 @@ MonoBehaviour:
   indicator: {fileID: 446673482}
   perfectShotImage: {fileID: 19251862}
   highShotImage: {fileID: 35222928}
+  isActive: 0
 --- !u!114 &508801588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4833,6 +4835,18 @@ MonoBehaviour:
   leaveMatchButton: {fileID: 1637004067}
   quitMatchButton: {fileID: 1729125638}
   keepPlayingButton: {fileID: 1272286803}
+--- !u!114 &1455012048 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 400154923668410678, guid: b24ccb9028aa2db43b72039876cdf427,
+    type: 3}
+  m_PrefabInstance: {fileID: 1024191223260945105}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6e73ad0b3ef61404c9a40629190bf2cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1471089017
 GameObject:
   m_ObjectHideFlags: 0
@@ -10044,6 +10058,11 @@ PrefabInstance:
       propertyPath: backBoardTransform
       value: 
       objectReference: {fileID: 982870627}
+    - target: {fileID: 400154923668410679, guid: b24ccb9028aa2db43b72039876cdf427,
+        type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 1024191223594507460, guid: b24ccb9028aa2db43b72039876cdf427,
         type: 3}
       propertyPath: m_Name
@@ -10104,6 +10123,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1897134117309905966, guid: b24ccb9028aa2db43b72039876cdf427,
+        type: 3}
+      propertyPath: ballSystem
+      value: 
+      objectReference: {fileID: 1455012048}
     - target: {fileID: 1897134117309905966, guid: b24ccb9028aa2db43b72039876cdf427,
         type: 3}
       propertyPath: shootingManager

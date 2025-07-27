@@ -102,11 +102,11 @@ public class BallSystem : MonoBehaviour
                 break;
         }
 
-        print($"shot of type {shotType} at {targetPos} with angle {shotAngle}");
+        //print($"shot of type {shotType} at {targetPos} with angle {shotAngle}");
 
         Vector3 velocity = CalculateVelocity(targetPos, transform.position, shotAngle);
 
-        print($"asdss velotic {velocity}");
+        //print($"asdss velotic {velocity}");
 
         rig.AddForce(velocity, ForceMode.VelocityChange);
     }

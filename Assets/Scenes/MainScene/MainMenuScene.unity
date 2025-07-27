@@ -528,6 +528,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 79250673}
   m_CullTransparentMesh: 1
+--- !u!1 &94348398
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 94348399}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &94348399
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 94348398}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -5.379468, y: 2.330237, z: 0.8352823}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 13
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &96284385
 GameObject:
   m_ObjectHideFlags: 0
@@ -7279,7 +7310,7 @@ MonoBehaviour:
   playerFee: {fileID: 1281043044}
   enemyFee: {fileID: 2075157785}
   totalReward: {fileID: 275319614}
-  transferDuration: 2
+  transferDuration: 0.5
 --- !u!1 &1486456992
 GameObject:
   m_ObjectHideFlags: 0
@@ -36190,11 +36221,13 @@ MonoBehaviour:
   currentShotInfo: {fileID: 0}
   currentPositionIndex: 0
   isPossibleToShoot: 0
+  hasScored: 0
   shotType: 0
   pointScored: 0
   points: 0
   fillBarSystem: {fileID: 0}
   trailSystem: {fileID: 0}
+  isPressed: 0
   isTimerRunning: 0
   timerDuration: 1
   currentTimer: 0

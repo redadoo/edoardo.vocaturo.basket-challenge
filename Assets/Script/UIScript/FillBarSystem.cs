@@ -9,9 +9,13 @@ public class FillBarSystem : MonoBehaviour
     [SerializeField] private RectTransform indicator;
     [SerializeField] private RectTransform perfectShotImage;
     [SerializeField] private RectTransform highShotImage;
+    [SerializeField] private bool isActive;
 
     private void Update()
     {
+        if (!isActive)
+            return;
+
         UpdateFillAmountFromInput();
         UpdateIndicatorPosition();
     }
@@ -77,11 +81,12 @@ public class FillBarSystem : MonoBehaviour
         }
     }
 
-    public void ResetValue()
-    {
+    public void ResetValue() =>
         fillImage.fillAmount = 0;
-    }
 
     public float GetFillAmount() =>
         fillImage.fillAmount;
+
+    public void ChangeStatus(bool newState) =>
+        isActive = newState;
 }

@@ -8,6 +8,7 @@ public class PlayerShooterController : ShooterController
     [SerializeField] private TrailSystem trailSystem;
 
     [Header("Shot Timer")]
+    [SerializeField] private bool isPressed;
     [SerializeField] private bool isTimerRunning = false;
     [SerializeField] private float timerDuration = 1f;
     [SerializeField] private float currentTimer = 0f;
@@ -49,6 +50,7 @@ public class PlayerShooterController : ShooterController
         base.Init(shotInfo);
 
         trailSystem.ChangeTrailState(true);
+        fillBarSystem.ChangeStatus(true);
         fillBarSystem.SetShotRange(currentShotInfo);
         transform.position = currentShotInfo.shotPositions[pointScored].transform.position;
         transform.rotation = currentShotInfo.shotPositions[pointScored].transform.rotation;
@@ -97,23 +99,33 @@ public class PlayerShooterController : ShooterController
             isTimerRunning = false;
             ballSystem.ShootBall(ShotType.PerfectShot, currentShotInfo);
             isPossibleToShoot = false;
+            fillBarSystem.ChangeStatus(false);
+            isPressed = false;
         }
     }
 
     private void OnClickStartNotOverUI()
     {
-        if (isPossibleToShoot)
+        if (!isPressed && isPossibleToShoot)
+        {
+            trailSystem.ChangeTrailState(true);
+            fillBarSystem.ChangeStatus(true);
+            isPressed = true;
             isTimerRunning = true;
+        }
     }
 
     private void OnClickCanceledNotOverUI()
     {
-        if (isPossibleToShoot)
+        if (isPressed && isPossibleToShoot)
         {
             shotType = currentShotInfo.GetShotType(fillBarSystem.GetFillAmount());
             ballSystem.ShootBall(shotType, currentShotInfo);
             hasScored = false;
             isPossibleToShoot = false;
+            fillBarSystem.ChangeStatus(false);
+            trailSystem.ChangeTrailState(false);
+            isPressed = false;
         }
     }
 }
