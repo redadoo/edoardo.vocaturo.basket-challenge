@@ -5,6 +5,9 @@ using TMPro;
 
 public class UIGameplay : GenericSingleton<UIGameplay>
 {
+    [Header("Reference")]
+    [SerializeField] private ShootingManager shootingManager;
+
     [Header("UI GameObject")]
     [SerializeField] private GameObject shotSlider;
     [SerializeField] private GameObject scoreGameObject;
@@ -14,15 +17,54 @@ public class UIGameplay : GenericSingleton<UIGameplay>
     [SerializeField] private GameObject menuPageUIGameObject;
     [SerializeField] private GameObject leavePageUIGameObject;
     [SerializeField] private GameObject playerBoxes;
+    [SerializeField] private GameObject resultPage;
 
     [SerializeField] private TMP_Text playerScore;
     [SerializeField] private TMP_Text enemyScore;
+
+    [SerializeField] private TMP_Text playerResultScore;
+    [SerializeField] private TMP_Text enemyResultScore;
+
+    [SerializeField] private TMP_Text finalSentence;
 
     [Header("Cooldown")]
     [SerializeField] private GameObject countdownGameObject;
     [SerializeField] private TextMeshProUGUI countdownText;
 
     public event Action OnCooldownEnd;
+
+    private void OnEnable()
+    {
+        if (UIGameTimer.Instance != null)
+            UIGameTimer.Instance.OnGameEnd += OnGameEnd;
+    }
+
+    private void OnGameEnd()
+    {
+        SetUiState(false);
+
+        resultPage.SetActive(true);
+        playerResultScore.text = playerScore.text;
+        enemyResultScore.text = enemyScore.text;
+
+        if (shootingManager.IsPlayerWinner())
+        {
+            finalSentence.text = "You won";
+            GameManager.Instance.IncreaseMoney(500);
+        }
+        else
+        {
+            finalSentence.text = "You lose";
+        }
+
+        StartCoroutine(Wait());
+    }
+    IEnumerator Wait()
+    {
+        yield return new WaitForSeconds(2.5f);
+        LoadingSceneManager.Instance.LoadScene(Scene.MainMenu);
+    }
+
 
     private void Start()
     {

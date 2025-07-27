@@ -5,7 +5,7 @@ public class TrailSystem : MonoBehaviour
     [SerializeField] private TrailRenderer trailRenderer;
     [SerializeField] private Camera mainCamera;
 
-    private const float TrailXPosition = 5f;
+    private const float TrailXPosition = -0.3000002f;
     private bool isActive = false;
 
     private void Awake()

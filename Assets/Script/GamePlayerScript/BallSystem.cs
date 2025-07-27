@@ -24,8 +24,8 @@ public class BallSystem : MonoBehaviour
 
     private void Start()
     {
-        startPos = transform.position;
-        startRot = transform.rotation;
+        startPos = transform.localPosition;
+        startRot = transform.localRotation;
         rig = GetComponent<Rigidbody>();
     }
 
@@ -75,7 +75,7 @@ public class BallSystem : MonoBehaviour
     {
         rig.velocity = Vector3.zero;
         rig.angularVelocity = Vector3.zero;
-        startPos = transform.position;
+        startPos = transform.localPosition;
 
         Vector3 targetPos = hopperTransform.position;
         float shotAngle = shotInfo.perfectShotAngle;
@@ -139,7 +139,7 @@ public class BallSystem : MonoBehaviour
     {
         rig.velocity = Vector3.zero;
         rig.angularVelocity = Vector3.zero;
-        transform.position = startPos;
+        transform.localPosition = startPos;
         transform.rotation = startRot;
     }
 }

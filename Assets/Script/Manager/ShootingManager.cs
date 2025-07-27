@@ -15,6 +15,18 @@ public class ShootingManager : MonoBehaviour
     {
         if (UIGameplay.Instance != null)
             UIGameplay.Instance.OnCooldownEnd += OnCooldownEnd;
+
+        if (UIGameTimer.Instance != null)
+            UIGameTimer.Instance.OnGameEnd += OnGameEnd;
+    }
+
+    private void OnGameEnd()
+    {
+        playerShooter.SetShotInfo(GetShotRange(0));
+        enemyShooter.SetShotInfo(GetShotRange(0));
+
+        playerShooter.ResetValue();
+        enemyShooter.ResetValue();
     }
 
     private void OnCooldownEnd()
@@ -25,5 +37,8 @@ public class ShootingManager : MonoBehaviour
 
     public ShotInfoSO GetShotRange(int index) =>
         shotInfos[index];
+
+    public bool IsPlayerWinner() =>
+        playerShooter.points > enemyShooter.points;
 
 }

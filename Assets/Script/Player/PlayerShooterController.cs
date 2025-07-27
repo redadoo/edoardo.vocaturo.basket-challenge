@@ -1,5 +1,4 @@
 using UnityEngine;
-using System;
 
 public class PlayerShooterController : ShooterController
 {
@@ -58,7 +57,8 @@ public class PlayerShooterController : ShooterController
 
     protected override void OnBallHitFloor()
     {
-        if (pointScored != 0 && pointScored % 3 == 0)
+
+        if (pointScored != 0 && pointScored % 3 == 0 && currentPositionIndex < 2)
         {
             currentPositionIndex++;
             currentShotInfo = shootingManager.GetShotRange(currentPositionIndex);
@@ -66,7 +66,7 @@ public class PlayerShooterController : ShooterController
         }
     
         fillBarSystem.SetShotRange(currentShotInfo);
-        if (hasScored)
+        if (hasScored && pointScored < currentShotInfo.shotPositions.Count)
         {
             transform.position = currentShotInfo.shotPositions[pointScored].transform.position;
             transform.rotation = currentShotInfo.shotPositions[pointScored].transform.rotation;
@@ -76,6 +76,7 @@ public class PlayerShooterController : ShooterController
         currentTimer = 0;
         isTimerRunning = false;
         isPossibleToShoot = true;
+
         hasScored = false;
     }
 
@@ -127,5 +128,19 @@ public class PlayerShooterController : ShooterController
             trailSystem.ChangeTrailState(false);
             isPressed = false;
         }
+    }
+
+    public void ResetValue()
+    {
+        hasScored = false;
+        isPossibleToShoot = false;
+        isPressed = false;
+        fillBarSystem.ChangeStatus(false);
+        trailSystem.ChangeTrailState(false);
+        transform.SetPositionAndRotation
+        (
+            currentShotInfo.shotPositions[0].transform.position, 
+            currentShotInfo.shotPositions[0].transform.rotation
+        );
     }
 }

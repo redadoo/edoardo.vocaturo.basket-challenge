@@ -15,6 +15,11 @@ public class DataPersistenceManager : PersistentSingleton<DataPersistenceManager
     private List<IDataPersistence> dataPersistenceObjects;
     private FileDataHandler dataHandler;
 
+    private void OnEnable()
+    {
+        LoadingSceneManager.instance.OnSceneChange += OnSceneChange;
+    }
+
     public void Start()
     {
         if (save)
@@ -74,6 +79,12 @@ public class DataPersistenceManager : PersistentSingleton<DataPersistenceManager
             FindObjectsOfType<MonoBehaviour>().OfType<IDataPersistence>();
 
         return new List<IDataPersistence>(dataPersistenceObjects);
+    }
+
+    private void OnSceneChange(object sender, Scene e)
+    {
+        if (e == Scene.MainMenu)
+            LoadGame();
     }
 
 }

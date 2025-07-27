@@ -12,7 +12,7 @@ public abstract class ShooterController : MonoBehaviour
     [SerializeField] protected bool hasScored;
     [SerializeField] protected ShotType shotType;
     [SerializeField] protected int pointScored;
-    [SerializeField] protected int points;
+    [SerializeField] public int points { get; protected set; }
 
     protected virtual void OnEnable()
     {
@@ -40,6 +40,11 @@ public abstract class ShooterController : MonoBehaviour
         isPossibleToShoot = true;
     }
 
+
+    public void SetShotInfo(ShotInfoSO shotInfo)
+    {
+        currentShotInfo = shotInfo;
+    }
 
     protected virtual void OnBallHitFloor()
     {

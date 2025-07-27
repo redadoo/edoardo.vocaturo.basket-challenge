@@ -6,6 +6,7 @@ public enum EnemyState
 {
     Idle,
     Playing,
+    Finish
 }
 
 public class EnemyShooterController : ShooterController
@@ -22,7 +23,8 @@ public class EnemyShooterController : ShooterController
     {
         if (enemyState == EnemyState.Idle)
             return;
-
+        if (enemyState == EnemyState.Finish)
+            return;
         HandleTimer();
     }
 
@@ -38,6 +40,9 @@ public class EnemyShooterController : ShooterController
 
     protected override void OnBallHitFloor()
     {
+        if (enemyState == EnemyState.Finish)
+            return;
+
         if (pointScored != 0 && pointScored % 3 == 0)
         {
             currentPositionIndex++;
@@ -47,7 +52,6 @@ public class EnemyShooterController : ShooterController
 
         if (hasScored)
         {
-            print("pantomima");
             transform.position = currentShotInfo.shotPositions[pointScored].transform.position;
             transform.rotation = currentShotInfo.shotPositions[pointScored].transform.rotation;
         }
@@ -76,5 +80,15 @@ public class EnemyShooterController : ShooterController
             timerDuration = Random.Range(1.5f, 2.8f);
             enemyState = EnemyState.Idle;
         }
+    }
+
+    public void ResetValue()
+    {
+        enemyState = EnemyState.Finish;
+        hasScored = false;
+        isPossibleToShoot = false;
+        isPressed = false;
+        isTimerRunning = false;
+        transform.SetPositionAndRotation(currentShotInfo.shotPositions[0].transform.position, currentShotInfo.shotPositions[0].transform.rotation);
     }
 }
