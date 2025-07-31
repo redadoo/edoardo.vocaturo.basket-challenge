@@ -1,3 +1,4 @@
+
 using System.Collections.Generic;
 using DataPersistance;
 using UnityEngine;
@@ -24,7 +25,7 @@ public class GameManager : PersistentSingleton<GameManager>, IDataPersistence
     public int gold { get; private set; } = 0;
     public int money { get; private set; } = 0;
 
-    public event Action OnMoneyChange;
+    public event Action<int, int> OnMoneyChange;
 
     private void Start()
     {
@@ -82,7 +83,7 @@ public class GameManager : PersistentSingleton<GameManager>, IDataPersistence
         CampTypeSO baseCamp = availableCampTypes[^1];
         currentCampType = ScriptableObject.CreateInstance<CampTypeSO>();
 
-        currentCampType.matchAdmissionFee = 250;
+        currentCampType.matchAdmissionFee = 0;
         currentCampType.enemyDifficulty = availableCampTypes[difficultyIndex].enemyDifficulty;
         currentCampType.matchDuration = matchDuration;
 
@@ -110,7 +111,7 @@ public class GameManager : PersistentSingleton<GameManager>, IDataPersistence
         else
             money = Mathf.Max(0, money + amount);
 
-        OnMoneyChange?.Invoke();
+        OnMoneyChange?.Invoke(money, gold);
     }
 
     public void GiveMoneyReward()
@@ -123,7 +124,7 @@ public class GameManager : PersistentSingleton<GameManager>, IDataPersistence
         money = data.money;
         gold = data.gold;
 
-        OnMoneyChange?.Invoke();
+        OnMoneyChange?.Invoke(money, gold);
     }
 
     public void SaveData(ref GameData data)

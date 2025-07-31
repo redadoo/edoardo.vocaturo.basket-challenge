@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dea5378956eefe449ac767fce1a06eab, type: 3}
   m_Name: LongShot
   m_EditorClassIdentifier: 
-  perfectMin: 0.7
-  perfectMax: 0.8
+  perfectMin: 0.6
+  perfectMax: 0.7
   perfectShotAngle: 75
   tolerance: 0.05
-  highMin: 0.9
-  highMax: 1
+  highMin: 0.8
+  highMax: 0.9
   highShotAngle: 75
   shotPositions:
   - {fileID: 3689224955050246743, guid: bdfe588f6d7f4994893ca2067e69d42e, type: 3}

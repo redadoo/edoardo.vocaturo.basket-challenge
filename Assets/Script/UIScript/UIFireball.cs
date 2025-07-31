@@ -96,7 +96,8 @@ namespace UIScript
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
-                fillBar.fillAmount = Mathf.Lerp(startFill, target, elapsed / duration);
+                float t = elapsed / duration;
+                fillBar.fillAmount = Mathf.SmoothStep(startFill, target, t);
                 yield return null;
             }
 

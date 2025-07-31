@@ -13,8 +13,8 @@ public class PlayerShooterController : ShooterController
     [SerializeField] private UIFireball uiFireball;
 
     [Header("Shot Timer")]
-    [SerializeField] private float timerDuration = 1f;
-    [SerializeField] private float currentTimer = 0f;
+    [SerializeField] private float timerDuration;
+    [SerializeField] private float currentTimer;
 
     private bool isBallOnFire;
 
@@ -88,6 +88,7 @@ public class PlayerShooterController : ShooterController
         else uiFireball.OnShotMade(pointScoredLastTime);
 
         points += pointScoredLastTime + bonusPoints;
+        bonusPoints = 0;
 
         UIFeedback.Instance.ShowScore(isPlayer, pointScoredLastTime + bonusPoints);
         UIGameplay.Instance.UpdateScore(isPlayer, points);

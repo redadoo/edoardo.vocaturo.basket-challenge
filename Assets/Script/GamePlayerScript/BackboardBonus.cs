@@ -23,7 +23,8 @@ public class BackboardBonus : MonoBehaviour
 
     private void Start()
     {
-        backboardMaterial = GetComponent<MeshRenderer>().material;
+        //backboardMaterial = GetComponent<MeshRenderer>().material;
+        DeactivateBonus();
 
         InitializeBonusColors();
         StartCoroutine(BonusCycleRoutine());

@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: CustomCamp
   m_EditorClassIdentifier: 
   matchDuration: 0
-  matchRewardValue: 500
-  matchAdmissionFee: 250
+  matchRewardValue: 0
+  matchAdmissionFee: 0
   enemyDifficulty: {fileID: 11400000, guid: 7fc50a1c52df0504fbbff4372b0c4b45, type: 2}

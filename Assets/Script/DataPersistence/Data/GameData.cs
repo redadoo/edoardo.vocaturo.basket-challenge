@@ -18,7 +18,7 @@ namespace DataPersistance
         public GameData() 
         {
             username = "user_1234";
-            money = 0;
+            money = 100000;
             gold = 0;
         }
     }

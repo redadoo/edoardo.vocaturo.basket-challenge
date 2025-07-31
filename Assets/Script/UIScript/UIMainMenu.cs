@@ -61,17 +61,15 @@ namespace UIScript
         {
             SetupMenuPanelDictionary();
             SetButtons();
-
-            if (GameManager.TryGetInstance() != null)
-                GameManager.Instance.OnMoneyChange += OnMoneyChange;
-
-            if (LoadingSceneManager.TryGetInstance() != null)
-                LoadingSceneManager.Instance.OnSceneChange += OnSceneChange;
         }
 
         private void Start()
         {
+            GameManager.Instance.OnMoneyChange += OnMoneyChange;
+            LoadingSceneManager.Instance.OnSceneChange += OnSceneChange;
+
             NavigateTo(MenuPage.Main, clearHistory: true);
+            OnMoneyChange();
         }
 
         private void OnDisable()
@@ -186,6 +184,12 @@ namespace UIScript
         /// <summary>
         /// Updates the currency text UI with the player's current money and gold values.
         /// </summary>
+        private void OnMoneyChange(int money, int gold)
+        {
+            moneyText.text = money.ToString();
+            goldText.text = gold.ToString();
+        }
+
         private void OnMoneyChange()
         {
             moneyText.text = GameManager.Instance.money.ToString();

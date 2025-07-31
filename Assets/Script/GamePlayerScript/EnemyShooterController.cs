@@ -34,8 +34,9 @@ public class EnemyShooterController : ShooterController
         base.OnBallScored();
 
         points += pointScoredLastTime + bonusPoints;
+        bonusPoints = 0;
 
-        UIFeedback.Instance.ShowScore(isPlayer, pointScoredLastTime);
+        UIFeedback.Instance.ShowScore(isPlayer, pointScoredLastTime + bonusPoints);
         UIGameplay.Instance.UpdateScore(isPlayer, points);
     }
 

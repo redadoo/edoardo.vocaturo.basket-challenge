@@ -13,7 +13,7 @@ namespace UIScript
         [SerializeField] private RectTransform highShotImage;
         [SerializeField] private bool isActive;
 
-        private const int ScreenHeightOccupied = 100;
+        private const int ScreenHeightOccupied = 160;
 
         private void Update()
         {

@@ -1121,7 +1121,7 @@ MonoBehaviour:
   fillBarSystem: {fileID: 508801587}
   trailSystem: {fileID: 575155476}
   uiFireball: {fileID: 1348120476}
-  timerDuration: 1
+  timerDuration: 0.5
   currentTimer: 0
 --- !u!4 &204912025 stripped
 Transform:
@@ -6418,7 +6418,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   backboardMaterial: {fileID: 2100000, guid: 80afc5ee080d21544bf3a09e92fa80da, type: 2}
   bonusText: {fileID: 358917283}
-  interval: 20
+  interval: 15
   wasHit: 0
 --- !u!1 &1555131099
 GameObject:
