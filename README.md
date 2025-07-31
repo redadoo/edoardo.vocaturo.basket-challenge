@@ -24,17 +24,24 @@ Welcome to the **Basket Challenge** — a technical game development challenge f
 
 The game starts with a **main menu** that visually resembles the one in *Basketball Stars*. Currently, only the **"Play"** button is functional.
 
-Upon pressing Play, the player is presented with a **camp selection screen**:
+Upon pressing **Play**, the game displays **three game modes**:
 
-- The **first three camps** represent increasing difficulty levels:
+- **Shots** (implemented)
+- **Duels** (not implemented)
+- **Carrier** (not implemented)
+
+In **Shots** mode, the player competes against an AI-controlled opponent to score as many points as possible within the time limit.
+
+After selecting the **Shots** mode, the player is taken to a **camp selection screen**:
+
+- The **first three fields** are ordered by AI difficulty and match duration:
   - Camp 1: Easy AI
   - Camp 2: Medium AI
   - Camp 3: Hard AI
 
-- The **fourth camp** is a **Custom Camp**, where players can configure:
+- The **fourth camp** is a **Custom Camp**, where the player can choose:
   - Match duration
   - Opponent difficulty
-
 ---
 
 ## To-Do List
