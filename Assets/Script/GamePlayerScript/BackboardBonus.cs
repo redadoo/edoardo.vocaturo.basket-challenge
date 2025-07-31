@@ -1,22 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UIScript;
 using TMPro;
 
 /// <summary>
-/// Handles the backboard bonus visual and logic.
+/// Controls the visual bonus indicator and emission logic for the backboard during gameplay.
 /// </summary>
 public class BackboardBonus : MonoBehaviour
 {
-    [Header("Visual References")]
+    [Header("Visual Components")]
     [SerializeField] private Material backboardMaterial;
     [SerializeField] private TMP_Text bonusText;
 
-    [Header("Timing Settings")]
+    [Header("Bonus Settings")]
     [SerializeField] private float interval = 20f;
 
-    private Dictionary<Color, int> backboardColors;
-    private Color? currentColor = null;
+    private readonly Dictionary<Color, int> bonusByColor = new();
+    private Color activeColor;
 
     public bool wasHit;
 
@@ -24,72 +25,98 @@ public class BackboardBonus : MonoBehaviour
     {
         backboardMaterial = GetComponent<MeshRenderer>().material;
 
-        backboardColors = new Dictionary<Color, int>
-        {
-            { new Color(1f, 1f, 0f), 8 },
-            { new Color(0f, 0f, 1f), 6 },
-            { new Color(0f, 1f, 0f), 4 }
-        };
-
-        StartCoroutine(EmissionPulseRoutine());
+        InitializeBonusColors();
+        StartCoroutine(BonusCycleRoutine());
     }
 
-    private IEnumerator EmissionPulseRoutine()
+    /// <summary>
+    /// Initializes the dictionary of possible bonus colors and values.
+    /// </summary>
+    private void InitializeBonusColors()
+    {
+        bonusByColor.Clear();
+        bonusByColor[Color.yellow] = 8;
+        bonusByColor[Color.blue] = 6;
+        bonusByColor[Color.green] = 4;
+    }
+
+    /// <summary>
+    /// Coroutine that controls the timing and activation of backboard bonuses.
+    /// </summary>
+    private IEnumerator BonusCycleRoutine()
     {
         while (true)
         {
             yield return new WaitForSeconds(interval);
 
             UIFeedback.Instance.ShowBackboardBonus();
-            EnableEmission();
+            ActivateBonus();
+
             wasHit = false;
+            yield return new WaitUntil(() => wasHit);
 
-            while (!wasHit)
-                yield return null;
-
-            DisableEmission();
-            wasHit = false;
+            DeactivateBonus();
         }
-    }
-
-    private void EnableEmission()
-    {
-        if (backboardMaterial != null && backboardColors.Count > 0)
-        {
-            List<Color> keys = new List<Color>(backboardColors.Keys);
-            int index = Random.Range(0, keys.Count);
-            Color chosenColor = keys[index];
-            int bonusValue = backboardColors[chosenColor];
-
-            bonusText.text = $"+{bonusValue}";
-            Color emissionColor = chosenColor * 2f;
-
-            backboardMaterial.EnableKeyword("_EMISSION");
-            backboardMaterial.SetColor("_EmissionColor", emissionColor);
-
-            currentColor = chosenColor;
-        }
-    }
-
-    private void DisableEmission()
-    {
-        if (backboardMaterial != null)
-        {
-            backboardMaterial.SetColor("_EmissionColor", Color.black);
-            backboardMaterial.DisableKeyword("_EMISSION");
-        }
-
-        bonusText.text = "";
-        currentColor = null;
     }
 
     /// <summary>
-    /// Returns the current bonus value based on the emission color.
+    /// Activates the emission and sets a random bonus color.
     /// </summary>
-    public int GetBonusValue()
+    private void ActivateBonus()
     {
-        if (currentColor.HasValue && backboardColors.ContainsKey(currentColor.Value))
-            return backboardColors[currentColor.Value];
-        return 0;
+        if (backboardMaterial == null || bonusByColor.Count == 0) return;
+
+        Color chosenColor = GetRandomBonusColor();
+        int bonusValue = bonusByColor[chosenColor];
+
+        SetEmission(chosenColor);
+        SetBonusText(bonusValue, chosenColor);
     }
+
+    /// <summary>
+    /// Deactivates the emission and hides the bonus text.
+    /// </summary>
+    private void DeactivateBonus()
+    {
+        if (backboardMaterial == null) return;
+
+        backboardMaterial.SetColor("_EmissionColor", Color.black);
+        backboardMaterial.DisableKeyword("_EMISSION");
+
+        bonusText.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// Sets the emission color for the material.
+    /// </summary>
+    private void SetEmission(Color color)
+    {
+        backboardMaterial.EnableKeyword("_EMISSION");
+        backboardMaterial.SetColor("_EmissionColor", color * 2f);
+    }
+
+    /// <summary>
+    /// Displays the bonus value on screen with the associated color.
+    /// </summary>
+    private void SetBonusText(int bonusValue, Color color)
+    {
+        bonusText.text = $"+{bonusValue}";
+        bonusText.gameObject.SetActive(true);
+        activeColor = color;
+    }
+
+    /// <summary>
+    /// Selects a random color from the available bonus colors.
+    /// </summary>
+    private Color GetRandomBonusColor()
+    {
+        List<Color> colors = new(bonusByColor.Keys);
+        return colors[Random.Range(0, colors.Count)];
+    }
+
+    /// <summary>
+    /// Returns the bonus value associated with the current active color.
+    /// </summary>
+    public int GetBonusValue() =>
+         bonusByColor.TryGetValue(activeColor, out int value) ? value : 0;
 }

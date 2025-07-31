@@ -10,10 +10,20 @@ public enum DifficultyLevel
 [CreateAssetMenu(fileName = "NewEnemyDifficulty", menuName = "Basketball/Enemy Difficulty", order = 2)]
 public class EnemyDifficultySO : ScriptableObject
 {
+    [Header("Difficulty Level")]
+    [Tooltip("Select the difficulty level for the enemy.")]
     public DifficultyLevel difficultyLevel;
-    public float minTimerDuration;
-    public float maxnTimerDuration;
 
+    [Header("Shot Timer Range")]
+    [Tooltip("Minimum duration between enemy shots.")]
+    public float minTimerDuration;
+
+    [Tooltip("Maximum duration between enemy shots.")]
+    public float maxTimerDuration;
+
+    /// <summary>
+    /// Returns a random shot type based on difficulty.
+    /// </summary>
     public ShotType GetRandomShotType()
     {
         float rand = Random.value;
@@ -42,6 +52,4 @@ public class EnemyDifficultySO : ScriptableObject
                 return ShotType.NormalShot;
         }
     }
-
-
 }

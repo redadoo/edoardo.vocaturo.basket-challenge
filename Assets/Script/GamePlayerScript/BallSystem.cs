@@ -23,17 +23,18 @@ public class BallSystem : MonoBehaviour
 
     private Rigidbody rb;
 
-    public event Action OnBallHitFloor;
-    public event Action OnBallScored;
-    public event Action<BackboardBonus> OnBackboardHit;
-
     private const float DropDistanceNotReach = 2f;
     private const float TooHighUpwardOffset = 0.9f;
     private const float TooHighAnglePenalty = 8f;
 
+    public event Action OnBallHitFloor;
+    public event Action OnBallScored;
+    public event Action<BackboardBonus> OnBackboardHit;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+
         initialPosition = transform.localPosition;
         initialRotation = transform.localRotation;
     }
@@ -57,13 +58,9 @@ public class BallSystem : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Basket"))
-        {
             OnBallScored?.Invoke();
-        }
         else if (other.CompareTag("Backboard") && other.TryGetComponent(out BackboardBonus bonus))
-        {
             OnBackboardHit?.Invoke(bonus);
-        }
     }
 
     /// <summary>

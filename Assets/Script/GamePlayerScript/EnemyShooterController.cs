@@ -1,13 +1,16 @@
 using UnityEngine;
+using UIScript;
 
 /// <summary>
-/// Controls the behavior of AI enemy shooters. Handles automated shot timing and execution.
+/// Controls the behavior of AI enemy shooters.
 /// </summary>
 public class EnemyShooterController : ShooterController
 {
-    [Header("Shot Timer")]
+    [Header("Shot Timer Settings")]
     [SerializeField] private float timerDuration = 1f;
     [SerializeField] private float currentTimer = 0f;
+
+    [Header("Difficulty Configuration")]
     [SerializeField] private EnemyDifficultySO difficultySO;
 
     private void Update()
@@ -18,10 +21,14 @@ public class EnemyShooterController : ShooterController
     public override void Init(ShotInfoSO shotInfo)
     {
         isPlayer = false;
-        SetDifficulty();
+        difficultySO = GameManager.Instance.GetCurrentCampType().enemyDifficulty;
+
         base.Init(shotInfo);
     }
 
+    /// <summary>
+    /// Called when the enemy scores. Updates the score and UI feedback.
+    /// </summary>
     protected override void OnBallScored()
     {
         base.OnBallScored();
@@ -33,11 +40,11 @@ public class EnemyShooterController : ShooterController
     }
 
     /// <summary>
-    /// Handles the shooting timer. Automatically triggers a shot after the timer elapses.
+    /// Handles the timer logic for automated shooting.
     /// </summary>
     private void HandleShotTimer()
     {
-        if (state != ShooterState.Dribbling)
+        if (state != ShooterState.Dribbling || difficultySO == null)
             return;
 
         currentTimer += Time.deltaTime;
@@ -47,14 +54,9 @@ public class EnemyShooterController : ShooterController
             shotType = difficultySO.GetRandomShotType();
             ballSystem.ShootBall(shotType, currentShotInfo);
 
-            timerDuration = Random.Range(difficultySO.minTimerDuration, difficultySO.maxnTimerDuration);
+            timerDuration = Random.Range(difficultySO.minTimerDuration, difficultySO.maxTimerDuration);
             currentTimer = 0f;
             state = ShooterState.Shot;
         }
-    }
-
-    private void SetDifficulty()
-    {
-        difficultySO = GameManager.Instance.GetCurrentCampType().enemyDifficulty;
     }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UIScript;
 
 /// <summary>
 /// Handles player-controlled shooting behavior, including input events, charge timing, 
@@ -92,16 +93,6 @@ public class PlayerShooterController : ShooterController
         UIGameplay.Instance.UpdateScore(isPlayer, points);
     }
 
-    private void OnStartFireBall()
-    {
-        isBallOnFire = true;
-    }
-
-    private void OnEndFireBall()
-    {
-        isBallOnFire = false;
-    }
-
     /// <summary>
     /// Handles the countdown timer during shot charging. Shoots automatically when time is up.
     /// </summary>
@@ -157,6 +148,11 @@ public class PlayerShooterController : ShooterController
         fillBarSystem.ChangeStatus(active);
         trailSystem.ChangeTrailState(active);
     }
+
+    private void OnStartFireBall() => 
+        isBallOnFire = true;
+    private void OnEndFireBall() =>
+        isBallOnFire = false;
 
     /// <summary>
     /// Resets the shooter's state and visual elements to default.

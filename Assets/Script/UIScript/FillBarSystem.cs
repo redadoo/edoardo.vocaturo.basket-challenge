@@ -1,94 +1,96 @@
 using UnityEngine;
+using UnityEngine.UI;
 
-public class FillBarSystem : MonoBehaviour
+namespace UIScript
 {
-    [Header("UI Elements")]
-    [SerializeField] private UnityEngine.UI.Image fillImage;
-    [SerializeField] private RectTransform fillArea;
-    [SerializeField] private RectTransform indicator;
-    [SerializeField] private RectTransform perfectShotImage;
-    [SerializeField] private RectTransform highShotImage;
-    [SerializeField] private bool isActive;
-
-    private const int ScreenHeightOccupied = 100;
-
-    private void Update()
+    public class FillBarSystem : MonoBehaviour
     {
-        if (!isActive)
-            return;
+        [Header("UI Elements")]
+        [SerializeField] private Image fillImage;
+        [SerializeField] private RectTransform fillArea;
+        [SerializeField] private RectTransform indicator;
+        [SerializeField] private RectTransform perfectShotImage;
+        [SerializeField] private RectTransform highShotImage;
+        [SerializeField] private bool isActive;
 
-        UpdateFillAmountFromInput();
-        UpdateIndicatorPosition();
-    }
+        private const int ScreenHeightOccupied = 100;
 
-    /// <summary>
-    /// Updates the vertical position of the indicator based on fill amount.
-    /// </summary>
-    private void UpdateIndicatorPosition()
-    {
-        float yPosition = GetYFromFillAmount(fillImage.fillAmount);
-        indicator.anchoredPosition = new Vector2(indicator.anchoredPosition.x, yPosition);
-    }
-
-    /// <summary>
-    /// Converts fill amount (0 to 1) into Y offset inside fill area.
-    /// </summary>
-    private float GetYFromFillAmount(float fillAmount)
-    {
-        float totalHeight = fillArea.rect.height;
-        float yPosition = (fillAmount - 0.5f) * totalHeight;
-        return yPosition;
-    }
-
-
-    /// <summary>
-    /// Displays shot range indicators at the appropriate fill levels.
-    /// </summary>
-    public void SetShotRange(ShotInfoSO shotInfo)
-    {
-
-        if (highShotImage != null)
+        private void Update()
         {
-            highShotImage.gameObject.SetActive(true);
-            highShotImage.anchoredPosition = new Vector2(
-                highShotImage.anchoredPosition.x,
-                GetYFromFillAmount(shotInfo.highMin) + 5
-            );
+            if (!isActive)
+                return;
+
+            UpdateFillAmountFromInput();
+            UpdateIndicatorPosition();
         }
 
-        if (perfectShotImage != null)
+        /// <summary>
+        /// Updates the vertical position of the indicator based on fill amount.
+        /// </summary>
+        private void UpdateIndicatorPosition()
         {
-            perfectShotImage.gameObject.SetActive(true);
-            perfectShotImage.anchoredPosition = new Vector2(
-                perfectShotImage.anchoredPosition.x,
-                GetYFromFillAmount(shotInfo.perfectMin) + 5
-            );
+            float yPosition = GetYFromFillAmount(fillImage.fillAmount);
+            indicator.anchoredPosition = new Vector2(indicator.anchoredPosition.x, yPosition);
         }
-    }
 
-    /// <summary>
-    /// Updates the fill amount based on the drag distance from the initial touch.
-    /// </summary>
-    private void UpdateFillAmountFromInput()
-    {
-        Vector2? firstTouch = InputManager.Instance.firstTouchPos;
-        Vector2 currentTouch = InputManager.Instance.touchPos;
-
-        if (firstTouch.HasValue)
+        /// <summary>
+        /// Converts fill amount (0 to 1) into Y offset inside fill area.
+        /// </summary>
+        private float GetYFromFillAmount(float fillAmount)
         {
-            float distance = Vector2.Distance(firstTouch.Value, currentTouch);
-            float normalized = Mathf.Clamp01(distance / (Screen.height - ScreenHeightOccupied));
-            if (normalized > fillImage.fillAmount)
-                fillImage.fillAmount = normalized;
+            float totalHeight = fillArea.rect.height;
+            float yPosition = (fillAmount - 0.5f) * totalHeight;
+            return yPosition;
         }
+
+        /// <summary>
+        /// Updates the fill amount based on the drag distance from the initial touch.
+        /// </summary>
+        private void UpdateFillAmountFromInput()
+        {
+            Vector2? firstTouch = InputManager.Instance.firstTouchPos;
+            Vector2 currentTouch = InputManager.Instance.touchPos;
+
+            if (firstTouch.HasValue)
+            {
+                float distance = Vector2.Distance(firstTouch.Value, currentTouch);
+                float normalized = Mathf.Clamp01(distance / (Screen.height - ScreenHeightOccupied));
+                if (normalized > fillImage.fillAmount)
+                    fillImage.fillAmount = normalized;
+            }
+        }
+
+        /// <summary>
+        /// Displays shot range indicators at the appropriate fill levels.
+        /// </summary>
+        public void SetShotRange(ShotInfoSO shotInfo)
+        {
+            if (highShotImage != null)
+            {
+                highShotImage.gameObject.SetActive(true);
+                highShotImage.anchoredPosition = new Vector2(
+                    highShotImage.anchoredPosition.x,
+                    GetYFromFillAmount(shotInfo.highMin) + 5
+                );
+            }
+
+            if (perfectShotImage != null)
+            {
+                perfectShotImage.gameObject.SetActive(true);
+                perfectShotImage.anchoredPosition = new Vector2(
+                    perfectShotImage.anchoredPosition.x,
+                    GetYFromFillAmount(shotInfo.perfectMin) + 5
+                );
+            }
+        }
+
+        public void ResetValue() =>
+            fillImage.fillAmount = 0;
+
+        public float GetFillAmount() =>
+            fillImage.fillAmount;
+
+        public void ChangeStatus(bool newState) =>
+            isActive = newState;
     }
-
-    public void ResetValue() =>
-        fillImage.fillAmount = 0;
-
-    public float GetFillAmount() =>
-        fillImage.fillAmount;
-
-    public void ChangeStatus(bool newState) =>
-        isActive = newState;
 }

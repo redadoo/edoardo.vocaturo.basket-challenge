@@ -1,8 +1,8 @@
 using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEngine;
-using System;
 using Utility;
+using System;
 
 /// <summary>
 /// Enum representing the different scenes available in the game.
@@ -13,23 +13,26 @@ public enum Scene
     Gameplay
 }
 
+/// <summary>
+/// Manages scene transitions and broadcasts scene change events.
+/// </summary>
 public class LoadingSceneManager : PersistentSingleton<LoadingSceneManager>
 {
+    [Header("Scene Management")]
     [SerializeField] private Scene currentScene;
     [SerializeField] private bool isLoading = false;
 
     public event EventHandler<Scene> OnSceneChange;
 
     /// <summary>
-    /// Initiates asynchronous loading of the specified scene.
-    /// If a scene is already loading, the call is ignored.
+    /// Starts loading the given scene asynchronously.
+    /// If a scene is already loading, the method exits early.
     /// </summary>
-    /// <param name="scene">The scene to be loaded.</param>
     public void LoadScene(Scene scene)
     {
         if (isLoading)
         {
-            Debug.LogWarning("A scene is already loading");
+            Debug.LogWarning("A scene is already loading.");
             return;
         }
 
@@ -37,24 +40,21 @@ public class LoadingSceneManager : PersistentSingleton<LoadingSceneManager>
     }
 
     /// <summary>
-    /// Coroutine that performs the asynchronous scene loading.
-    /// Updates the current scene and triggers the OnSceneChange event upon completion.
+    /// Coroutine responsible for loading a new scene asynchronously.
+    /// Updates internal state and notifies listeners upon completion.
     /// </summary>
-    /// <param name="scene">The scene to load.</param>
-    /// <returns>IEnumerator for coroutine execution.</returns>
-    IEnumerator LoadSceneAsync(Scene scene)
+    private IEnumerator LoadSceneAsync(Scene scene)
     {
         isLoading = true;
 
-        int sceneId = (int)scene;
-        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneId);
+        AsyncOperation operation = SceneManager.LoadSceneAsync((int)scene);
 
-        while (!operation.isDone) 
+        while (!operation.isDone)
             yield return null;
 
         currentScene = scene;
-        OnSceneChange?.Invoke(this, currentScene);
-        
         isLoading = false;
+
+        OnSceneChange?.Invoke(this, currentScene);
     }
 }

@@ -37,13 +37,11 @@ public abstract class ShooterController : MonoBehaviour
     [Header("SoundData")]
     [SerializeField] protected SoundData basketSound;
 
-
-    public int points { get; protected set; }
-
     protected const int PerfectShotPoints = 3;
     protected const int HighShotPoints = 2;
     protected const int MaxShotsBeforeRangeIncrease = 3;
     protected bool isPlayer;
+    public int points { get; protected set; }
 
     
     protected virtual void OnEnable()
@@ -69,6 +67,8 @@ public abstract class ShooterController : MonoBehaviour
     /// </summary>
     protected virtual void OnBallHitFloor()
     {
+        if (state == ShooterState.Idle) return;
+
         if (pointScored != 0 && pointScored % MaxShotsBeforeRangeIncrease == 0)
         {
             currentShotInfo = shootingManager.GetNextShotRange(currentShotInfo);

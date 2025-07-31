@@ -1,45 +1,46 @@
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine;
 
-/// <summary>
-/// Handles the UI for selecting a camp type in the main menu.
-/// </summary>
-public class UICampType : MonoBehaviour
+namespace UIScript
 {
-    [Header("Camp Selection Buttons")]
-    [SerializeField] private List<Button> campButtons;
-
-    [Header("Create Match Type Button")]
-    [SerializeField] private Button createMatchTypeButton;
-
-    private void Start()
-    {
-        for (int i = 0; i < campButtons.Count; i++)
-        {
-                AssignCampButton(i, campButtons[i]);
-        }
-
-        if (createMatchTypeButton != null)
-        {
-            createMatchTypeButton.onClick.AddListener(() =>
-                UIMainMenu.Instance.NavigateTo(MenuPage.CreateMatchType));
-        }
-    }
-
     /// <summary>
-    /// Assigns the logic to a camp button based on its index.
+    /// Handles the UI for selecting a camp type in the main menu.
     /// </summary>
-    private void AssignCampButton(int index, Button button)
+    public class UICampType : MonoBehaviour
     {
-        button.onClick.AddListener(() =>
+        [Header("Camp Selection Buttons")]
+        [SerializeField] private List<Button> campButtons;
+
+        [Header("Create Match Type Button")]
+        [SerializeField] private Button createMatchTypeButton;
+
+        private void Start()
         {
-            GameManager.Instance.SetMatchInfo(index);
+            for (int i = 0; i < campButtons.Count; i++)
+                AssignCampButton(i, campButtons[i]);
 
-            if (!GameManager.Instance.HasEnoughMoneyForFee())
-                return;
+            if (createMatchTypeButton != null)
+            {
+                createMatchTypeButton.onClick.AddListener(() =>
+                    UIMainMenu.Instance.NavigateTo(MenuPage.CreateMatchType));
+            }
+        }
 
-            UIMainMenu.Instance.NavigateTo(MenuPage.MatchInfo);
-        });
+        /// <summary>
+        /// Assigns the logic to a camp button based on its index.
+        /// </summary>
+        private void AssignCampButton(int index, Button button)
+        {
+            button.onClick.AddListener(() =>
+            {
+                GameManager.Instance.SetMatchInfo(index);
+
+                if (!GameManager.Instance.HasEnoughMoneyForFee())
+                    return;
+
+                UIMainMenu.Instance.NavigateTo(MenuPage.MatchInfo);
+            });
+        }
     }
 }
