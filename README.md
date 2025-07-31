@@ -18,3 +18,10 @@ Welcome to the **Basket Challenge** — a technical game development challenge f
 - AI-controlled opponent that competes against the player using the same shooting mechanics 
 - Custom match mode (Custum difficulty and match duration)
 ---
+
+## To-Do List
+
+- [ ] Clear and refactor existing code  
+- [ ] Add mouse input support (desktop version)  
+
+---
