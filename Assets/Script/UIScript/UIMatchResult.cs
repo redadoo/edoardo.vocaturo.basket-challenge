@@ -9,16 +9,20 @@ public class UIMatchResult : MonoBehaviour
     [SerializeField] private GameObject playerWinnerGameObject;
     [SerializeField] private GameObject enemyWinnerGameObject;
 
-
-    private void OnGameFinish()
+    private void Start()
     {
-        int playerRes = 24;
-        int enemyRes = 21;
+        SetPlayersScore();
+    }
 
-        playerPointsText.text = playerRes.ToString();
-        enemyPointsText.text = enemyRes.ToString();
+    public void SetPlayersScore()
+    {
+        int playerPoints = GameManager.Instance.playerLastMatchPoints;
+        int enemyPoints = GameManager.Instance.enemyLastMatchPoints;
+        
+        playerPointsText.text = playerPoints.ToString();
+        enemyPointsText.text = enemyPoints.ToString();
 
-        if (playerRes > enemyRes)
+        if (playerPoints > enemyPoints)
             playerWinnerGameObject.SetActive(true);
         else
             enemyWinnerGameObject.SetActive(true);

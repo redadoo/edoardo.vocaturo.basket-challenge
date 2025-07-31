@@ -1,72 +1,161 @@
+using AudioSystem;
+using System;
 using UnityEngine;
 
+/// <summary>
+/// Possible states for the shooter during gameplay.
+/// </summary>
+public enum ShooterState
+{
+    Idle,
+    Dribbling,
+    Charging,
+    Shot,
+    Scored
+}
+
+/// <summary>
+/// Base class for controlling a shooter character (player or AI).
+/// </summary>
 public abstract class ShooterController : MonoBehaviour
 {
-    [Header("ShooterController reference")]
+    [Header("References")]
     [SerializeField] protected ShootingManager shootingManager;
     [SerializeField] protected BallSystem ballSystem;
 
+    [Header("Shooter State")]
+    [SerializeField] protected ShotType shotType;
+    [SerializeField] protected ShooterState state;
     [SerializeField] protected ShotInfoSO currentShotInfo;
     [SerializeField] protected int currentPositionIndex;
-    [SerializeField] protected bool isPossibleToShoot;
-    [SerializeField] protected bool hasScored;
-    [SerializeField] protected ShotType shotType;
-    [SerializeField] protected int pointScored;
-    [SerializeField] public int points { get; protected set; }
 
+    [Header("Scoring")]
+    [SerializeField] protected int pointScoredLastTime;
+    [SerializeField] protected int pointScored;
+    [SerializeField] protected int bonusPoints;
+
+    [Header("SoundData")]
+    [SerializeField] protected SoundData basketSound;
+
+
+    public int points { get; protected set; }
+
+    protected const int PerfectShotPoints = 3;
+    protected const int HighShotPoints = 2;
+    protected const int MaxShotsBeforeRangeIncrease = 3;
+    protected bool isPlayer;
+
+    
     protected virtual void OnEnable()
     {
-        if (ballSystem != null)
-        {
-            ballSystem.OnBallHitFloor += OnBallHitFloor;
-            ballSystem.OnBallScored += OnBallScored;
-            ballSystem.OnBackboardHit += OnBackboardHit;
-        }
+        if (ballSystem == null) return;
+        
+        ballSystem.OnBallHitFloor += OnBallHitFloor;
+        ballSystem.OnBallScored += OnBallScored;
+        ballSystem.OnBackboardHit += OnBackboardHit;
     }
 
     protected virtual void OnDestroy()
     {
-        if (ballSystem != null)
-        {
-            ballSystem.OnBallHitFloor -= OnBallHitFloor;
-            ballSystem.OnBallScored -= OnBallScored;
-            ballSystem.OnBackboardHit -= OnBackboardHit;
-        }
+        if (ballSystem == null) return;
+
+        ballSystem.OnBallHitFloor -= OnBallHitFloor;
+        ballSystem.OnBallScored -= OnBallScored;
+        ballSystem.OnBackboardHit -= OnBackboardHit;
     }
 
+    /// <summary>
+    /// Called when the ball hits the floor. Handles shot range progression and resets state.
+    /// </summary>
+    protected virtual void OnBallHitFloor()
+    {
+        if (pointScored != 0 && pointScored % MaxShotsBeforeRangeIncrease == 0)
+        {
+            currentShotInfo = shootingManager.GetNextShotRange(currentShotInfo);
+            pointScored = 0;
+        }
+
+        if (state == ShooterState.Scored)
+            SetTransform();
+
+        state = ShooterState.Dribbling;
+        bonusPoints = 0;
+    }
+
+    /// <summary>
+    /// Called when the ball is successfully scored in the basket.
+    /// Handles scoring logic, feedback, and state changes.
+    /// </summary>
+    protected virtual void OnBallScored()
+    {
+        switch (shotType)
+        {
+            case ShotType.PerfectShot:
+                pointScoredLastTime = PerfectShotPoints;
+                break;
+
+            case ShotType.NormalShot:
+                pointScoredLastTime = HighShotPoints;
+                break;
+
+            default:
+                return;
+        }
+
+        state = ShooterState.Scored;
+        pointScored++;
+
+        SoundManager.Instance.CreateSound()
+            .WithSoundData(basketSound)
+            .Play();
+    }
+
+    /// <summary>
+    /// Called when the ball hits the backboard. Applies bonus points if valid.
+    /// </summary>
+    protected virtual void OnBackboardHit(BackboardBonus backboard)
+    {
+        if (shotType != ShotType.NormalShot) return;
+
+        bonusPoints = backboard.GetBonusValue();
+        backboard.wasHit = true;
+    }
+
+    /// <summary>
+    /// Sets the transform of the shooter based on current shot configuration and state.
+    /// </summary>
+    protected void SetTransform()
+    {
+        currentShotInfo.SetTransform(transform, pointScored, isPlayer);
+    }
+
+
+    /// <summary>
+    /// Initializes the shooter with a given shot configuration.
+    /// </summary>
     public virtual void Init(ShotInfoSO shotInfo)
     {
         currentShotInfo = shotInfo;
-        isPossibleToShoot = true;
+        state = ShooterState.Dribbling;
+        SetTransform();
     }
 
+    /// <summary>
+    /// Resets the shooter's state.
+    /// </summary>
+    public virtual void ResetValue()
+    {
+        state = ShooterState.Idle;
+        pointScored = 0;
+        SetTransform();
+        ballSystem.ResetBall();
+    }
 
+    /// <summary>
+    /// Sets the shooter's current shot information.
+    /// </summary>
     public void SetShotInfo(ShotInfoSO shotInfo)
     {
         currentShotInfo = shotInfo;
     }
-
-    protected virtual void OnBallHitFloor()
-    {
-        if (pointScored != 0 && pointScored % 3 == 0)
-        {
-            currentPositionIndex++;
-            currentShotInfo = shootingManager.GetShotRange(currentPositionIndex);
-        }
-    }
-
-    protected virtual void OnBallScored()
-    {
-        if (shotType == ShotType.PerfectShot)
-            points += 3;
-        else if (shotType == ShotType.HighShot)
-            points += 2;
-        else
-            return;
-
-        pointScored++;
-    }
-
-    protected virtual void OnBackboardHit() { }
-
 }

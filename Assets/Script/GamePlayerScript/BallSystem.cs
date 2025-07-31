@@ -1,145 +1,143 @@
-using System;
-using System.Collections;
 using UnityEngine;
+using System;
 
+/// <summary>
+/// Handles all logic related to the basketball's physics and scoring interactions.
+/// </summary>
 public class BallSystem : MonoBehaviour
 {
-    [Header("Shot parameter")]
-    [SerializeField] private float shootAngle = 45f;
+    [Header("Shooting Parameters")]
+    [Tooltip("Gravity used to calculate ball trajectories.")]
     [SerializeField] private float gravity = 9.81f;
-    [SerializeField] private Transform hopperTransform;
-    [SerializeField] private Transform backBoardTransform;
 
-    [Header("Ball value")]
-    [SerializeField] private Vector3 startPos;
-    [SerializeField] private Quaternion startRot;
-    [SerializeField] private bool isFirst = true;
-    
-    private Rigidbody rig;
+    [Tooltip("Target position for perfect shots.")]
+    [SerializeField] private Transform hopperTransform;
+
+    [Tooltip("Target position for high and too-high shots.")]
+    [SerializeField] private Transform backboardTransform;
+
+    [Header("Ball State")]
+    [SerializeField] private Vector3 initialPosition;
+    [SerializeField] private Quaternion initialRotation;
+    [SerializeField] private bool isFirstThrow = true;
+
+    private Rigidbody rb;
 
     public event Action OnBallHitFloor;
     public event Action OnBallScored;
-    public event Action OnBackboardHit;
+    public event Action<BackboardBonus> OnBackboardHit;
 
+    private const float DropDistanceNotReach = 2f;
+    private const float TooHighUpwardOffset = 0.9f;
+    private const float TooHighAnglePenalty = 8f;
 
     private void Start()
     {
-        startPos = transform.localPosition;
-        startRot = transform.localRotation;
-        rig = GetComponent<Rigidbody>();
+        rb = GetComponent<Rigidbody>();
+        initialPosition = transform.localPosition;
+        initialRotation = transform.localRotation;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (!isFirst)
+        if (!isFirstThrow)
         {
             if (collision.transform.CompareTag("Floor"))
             {
-                ResetPos();
+                ResetBall();
                 OnBallHitFloor?.Invoke();
             }
         }
         else
-            isFirst = false;
+        {
+            isFirstThrow = false;
+        }
     }
 
-    private void OnTriggerEnter(Collider collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if (collision.transform.CompareTag("Basket"))
+        if (other.CompareTag("Basket"))
+        {
             OnBallScored?.Invoke();
-        else if(collision.transform.CompareTag("Backboard"))
-            OnBackboardHit?.Invoke();
+        }
+        else if (other.CompareTag("Backboard") && other.TryGetComponent(out BackboardBonus bonus))
+        {
+            OnBackboardHit?.Invoke(bonus);
+        }
     }
 
-    [ContextMenu("PerfectShootBall")]
-    public void PerfectShootBall()
-    {
-        rig.velocity = Vector3.zero;
-        rig.angularVelocity = Vector3.zero;
-
-        Vector3 velocity = CalculateVelocity(hopperTransform.position, transform.position, shootAngle);
-        rig.AddForce(velocity, ForceMode.VelocityChange);
-    }
-
-    [ContextMenu("ShootBall")]
-    public void HighShootBall()
-    {
-        rig.velocity = Vector3.zero;
-        rig.angularVelocity = Vector3.zero;
-
-        Vector3 velocity = CalculateVelocity(backBoardTransform.position, transform.position, shootAngle);
-        rig.AddForce(velocity, ForceMode.VelocityChange);
-    }
-
+    /// <summary>
+    /// Shoots the ball based on the shot type and parameters.
+    /// </summary>
     public void ShootBall(ShotType shotType, ShotInfoSO shotInfo)
     {
-        rig.velocity = Vector3.zero;
-        rig.angularVelocity = Vector3.zero;
-        startPos = transform.localPosition;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
 
-        Vector3 targetPos = hopperTransform.position;
+        Vector3 targetPosition = hopperTransform.position;
         float shotAngle = shotInfo.perfectShotAngle;
 
         switch (shotType)
         {
             case ShotType.NotReach:
-                targetPos += Vector3.down * 2f;
-                shotAngle = shotInfo.perfectShotAngle;
+                targetPosition += Vector3.down * DropDistanceNotReach;
                 break;
+
             case ShotType.PerfectShot:
-                targetPos = hopperTransform.position;
-                shotAngle = shotInfo.perfectShotAngle;
                 break;
-            case ShotType.HighShot:
-                targetPos = backBoardTransform.position;
+
+            case ShotType.NormalShot:
+                targetPosition = backboardTransform.position;
                 shotAngle = shotInfo.highShotAngle;
                 break;
+
             case ShotType.TooHigh:
-                targetPos = backBoardTransform.position + (backBoardTransform.up * 0.9f);
-                shotAngle = shotInfo.perfectShotAngle;
-                break;
-            default:
+                targetPosition = backboardTransform.position + (backboardTransform.up * TooHighUpwardOffset);
+                shotAngle -= TooHighAnglePenalty;
                 break;
         }
 
-        //print($"shot of type {shotType} at {targetPos} with angle {shotAngle}");
-
-        Vector3 velocity = CalculateVelocity(targetPos, transform.position, shotAngle);
-
-        //print($"asdss velotic {velocity}");
-
-        rig.AddForce(velocity, ForceMode.VelocityChange);
+        Vector3 launchVelocity = CalculateLaunchVelocity(targetPosition, transform.position, shotAngle);
+        rb.AddForce(launchVelocity, ForceMode.VelocityChange);
     }
 
-    private Vector3 CalculateVelocity(Vector3 target, Vector3 origin, float angle)
+    /// <summary>
+    /// Calculates the required launch velocity to reach a target point at a specific angle.
+    /// </summary>
+    /// <returns>The calculated velocity vector.</returns>
+    private Vector3 CalculateLaunchVelocity(Vector3 target, Vector3 origin, float angleDegrees)
     {
-        Vector3 direction = target - origin;
-        Vector3 directionXZ = new(direction.x, 0f, direction.z);
+        Vector3 displacement = target - origin;
+        Vector3 horizontal = new(displacement.x, 0f, displacement.z);
 
-        float distance = directionXZ.magnitude;
-        float heightDifference = direction.y;
-        float radianAngle = angle * Mathf.Deg2Rad;
+        float distance = horizontal.magnitude;
+        float height = displacement.y;
+        float angleRadians = angleDegrees * Mathf.Deg2Rad;
 
-        float numerator = gravity * distance * distance;
-        float denominator = 2f * Mathf.Pow(Mathf.Cos(radianAngle), 2) * (distance * Mathf.Tan(radianAngle) - heightDifference);
+        float cos = Mathf.Cos(angleRadians);
+        float sin = Mathf.Sin(angleRadians);
 
-        if (denominator <= 0)
+        float denominator = 2f * cos * cos * (distance * Mathf.Tan(angleRadians) - height);
+
+        if (denominator <= 0f)
             return Vector3.zero;
 
-        float velocityMagnitude = Mathf.Sqrt(numerator / denominator);
+        float velocityMagnitude = Mathf.Sqrt((gravity * distance * distance) / denominator);
 
-        Vector3 result = directionXZ.normalized;
-        result *= velocityMagnitude * Mathf.Cos(radianAngle);
-        result.y = velocityMagnitude * Mathf.Sin(radianAngle);
+        Vector3 velocity = horizontal.normalized * (velocityMagnitude * cos);
+        velocity.y = velocityMagnitude * sin;
 
-        return result;
+        return velocity;
     }
 
-    private void ResetPos()
+    /// <summary>
+    /// Resets the ball's position and velocity to its initial state.
+    /// </summary>
+    public void ResetBall()
     {
-        rig.velocity = Vector3.zero;
-        rig.angularVelocity = Vector3.zero;
-        transform.localPosition = startPos;
-        transform.rotation = startRot;
+        rb.velocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        transform.localPosition = initialPosition;
+        transform.localRotation = initialRotation;
     }
 }

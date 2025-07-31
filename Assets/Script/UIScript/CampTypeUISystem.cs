@@ -20,7 +20,7 @@ public class CampTypeUISystem : MonoBehaviour
 
     private void OnScrollChanged(Vector2 arg0)
     {
-        print(arg0);
+
     }
 
     public void ChangeArrow(int indexContent)

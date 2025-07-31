@@ -1,94 +1,60 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public enum EnemyState
-{
-    Idle,
-    Playing,
-    Finish
-}
-
+/// <summary>
+/// Controls the behavior of AI enemy shooters. Handles automated shot timing and execution.
+/// </summary>
 public class EnemyShooterController : ShooterController
 {
-    [SerializeField] private EnemyState enemyState;
-    [SerializeField] private float toWait;
-
-    [SerializeField] private bool isPressed;
-    [SerializeField] private bool isTimerRunning = false;
+    [Header("Shot Timer")]
     [SerializeField] private float timerDuration = 1f;
     [SerializeField] private float currentTimer = 0f;
+    [SerializeField] private EnemyDifficultySO difficultySO;
 
     private void Update()
     {
-        if (enemyState == EnemyState.Idle)
-            return;
-        if (enemyState == EnemyState.Finish)
-            return;
-        HandleTimer();
+        HandleShotTimer();
     }
 
     public override void Init(ShotInfoSO shotInfo)
     {
+        isPlayer = false;
+        SetDifficulty();
         base.Init(shotInfo);
-
-        enemyState = EnemyState.Playing;
-        transform.position = currentShotInfo.shotPositions[pointScored].transform.position;
-        transform.rotation = currentShotInfo.shotPositions[pointScored].transform.rotation;
-
-    }
-
-    protected override void OnBallHitFloor()
-    {
-        if (enemyState == EnemyState.Finish)
-            return;
-
-        if (pointScored != 0 && pointScored % 3 == 0)
-        {
-            currentPositionIndex++;
-            currentShotInfo = shootingManager.GetShotRange(currentPositionIndex);
-            pointScored = 0;
-        }
-
-        if (hasScored)
-        {
-            transform.position = currentShotInfo.shotPositions[pointScored].transform.position;
-            transform.rotation = currentShotInfo.shotPositions[pointScored].transform.rotation;
-        }
-
-        currentTimer = 0;
-        isTimerRunning = false;
-        isPossibleToShoot = true;
-        hasScored = false;
-        enemyState = EnemyState.Playing;
     }
 
     protected override void OnBallScored()
     {
         base.OnBallScored();
-        hasScored = true;
-        UIGameplay.Instance.IncreaseScore(false, points);
+
+        points += pointScoredLastTime + bonusPoints;
+
+        UIFeedback.Instance.ShowScore(isPlayer, pointScoredLastTime);
+        UIGameplay.Instance.UpdateScore(isPlayer, points);
     }
 
-    private void HandleTimer()
+    /// <summary>
+    /// Handles the shooting timer. Automatically triggers a shot after the timer elapses.
+    /// </summary>
+    private void HandleShotTimer()
     {
+        if (state != ShooterState.Dribbling)
+            return;
+
         currentTimer += Time.deltaTime;
+
         if (currentTimer >= timerDuration)
         {
-            shotType = (ShotType)Random.Range(0, 4);
+            shotType = difficultySO.GetRandomShotType();
             ballSystem.ShootBall(shotType, currentShotInfo);
-            timerDuration = Random.Range(1.5f, 2.8f);
-            enemyState = EnemyState.Idle;
+
+            timerDuration = Random.Range(difficultySO.minTimerDuration, difficultySO.maxnTimerDuration);
+            currentTimer = 0f;
+            state = ShooterState.Shot;
         }
     }
 
-    public void ResetValue()
+    private void SetDifficulty()
     {
-        enemyState = EnemyState.Finish;
-        hasScored = false;
-        isPossibleToShoot = false;
-        isPressed = false;
-        isTimerRunning = false;
-        transform.SetPositionAndRotation(currentShotInfo.shotPositions[0].transform.position, currentShotInfo.shotPositions[0].transform.rotation);
+        difficultySO = GameManager.Instance.GetCurrentCampType().enemyDifficulty;
     }
 }

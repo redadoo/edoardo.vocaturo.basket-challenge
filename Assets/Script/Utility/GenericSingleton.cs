@@ -1,38 +1,41 @@
 using UnityEngine;
 
-public class GenericSingleton<T> : MonoBehaviour where T : Component
+namespace Utility
 {
-    protected static T instance;
-
-    public static bool HasInstance => instance != null;
-    public static T TryGetInstance() => HasInstance ? instance : null;
-
-    public static T Instance
+    public class GenericSingleton<T> : MonoBehaviour where T : Component
     {
-        get
+        protected static T instance;
+
+        public static bool HasInstance => instance != null;
+        public static T TryGetInstance() => HasInstance ? instance : null;
+
+        public static T Instance
         {
-            if(instance == null)
+            get
             {
-                instance = FindObjectOfType<T>();
                 if (instance == null)
                 {
-                    var go = new GameObject(typeof(T).Name + " Generated");
-                    instance = go.AddComponent<T>();
+                    instance = FindObjectOfType<T>();
+                    if (instance == null)
+                    {
+                        var go = new GameObject(typeof(T).Name + " Generated");
+                        instance = go.AddComponent<T>();
+                    }
                 }
+                return instance;
             }
-            return instance;
         }
-    }
 
-    protected virtual void Awake()
-    {
-        InitializeSingleton();
-    }
+        protected virtual void Awake()
+        {
+            InitializeSingleton();
+        }
 
-    protected virtual void InitializeSingleton()
-    {
-        if (!Application.isPlaying) return;
+        protected virtual void InitializeSingleton()
+        {
+            if (!Application.isPlaying) return;
 
-        instance = this as T;
+            instance = this as T;
+        }
     }
 }

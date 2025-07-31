@@ -4,7 +4,7 @@ public enum ShotType
 {
     NotReach,
     PerfectShot,
-    HighShot,
+    NormalShot,
     TooHigh
 }
 
@@ -40,22 +40,35 @@ public class ShotInfoSO : ScriptableObject
     /// <summary>
     /// Returns the ShotType for the given fill value, considering tolerance.
     /// </summary>
-    /// <param name="fillValue">The normalized fill value (e.g., 0 to 1) representing shot timing.</param>
     /// <returns>Corresponding ShotType.</returns>
     public ShotType GetShotType(float fillValue)
     {
         if (fillValue < (perfectMin - tolerance))
             return ShotType.NotReach;
 
-        if (fillValue >= (perfectMin - tolerance) && fillValue <= (perfectMax + tolerance))
+        if (fillValue >= (perfectMin - tolerance) && fillValue < perfectMin)
+            return ShotType.NormalShot;
+
+        if (fillValue >= perfectMin && fillValue <= perfectMax)
             return ShotType.PerfectShot;
 
-        if (fillValue > (perfectMax + tolerance) && fillValue < highMin)
-            return ShotType.TooHigh;
+        if (fillValue > perfectMax && fillValue <= perfectMax + tolerance)
+            return ShotType.NormalShot;
 
-        if (fillValue >= (highMin - tolerance) && fillValue <= (highMax + tolerance))
-            return ShotType.HighShot;
-
+        if (fillValue >= highMin && fillValue <= highMax)
+            return ShotType.NormalShot;
+        
         return ShotType.TooHigh;
     }
+
+
+    public void SetTransform(Transform transform, int index, bool isPlayer)
+    {
+        index = index >= shotPositions.Count ? shotPositions.Count - 1 : index;
+        Vector3 pos = shotPositions[index].transform.position;
+        if (isPlayer) pos.z -= 1;
+        else pos.z += 1;
+        transform.SetPositionAndRotation(pos, shotPositions[index].transform.rotation); 
+    }
+
 }

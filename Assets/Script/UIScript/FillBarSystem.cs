@@ -1,15 +1,16 @@
-using UnityEngine.UI;
 using UnityEngine;
 
 public class FillBarSystem : MonoBehaviour
 {
     [Header("UI Elements")]
-    [SerializeField] private Image fillImage;
+    [SerializeField] private UnityEngine.UI.Image fillImage;
     [SerializeField] private RectTransform fillArea;
     [SerializeField] private RectTransform indicator;
     [SerializeField] private RectTransform perfectShotImage;
     [SerializeField] private RectTransform highShotImage;
     [SerializeField] private bool isActive;
+
+    private const int ScreenHeightOccupied = 100;
 
     private void Update()
     {
@@ -35,8 +36,10 @@ public class FillBarSystem : MonoBehaviour
     private float GetYFromFillAmount(float fillAmount)
     {
         float totalHeight = fillArea.rect.height;
-        return (fillAmount - 0.5f) * totalHeight;
+        float yPosition = (fillAmount - 0.5f) * totalHeight;
+        return yPosition;
     }
+
 
     /// <summary>
     /// Displays shot range indicators at the appropriate fill levels.
@@ -49,7 +52,7 @@ public class FillBarSystem : MonoBehaviour
             highShotImage.gameObject.SetActive(true);
             highShotImage.anchoredPosition = new Vector2(
                 highShotImage.anchoredPosition.x,
-                GetYFromFillAmount(shotInfo.highMin)
+                GetYFromFillAmount(shotInfo.highMin) + 5
             );
         }
 
@@ -58,7 +61,7 @@ public class FillBarSystem : MonoBehaviour
             perfectShotImage.gameObject.SetActive(true);
             perfectShotImage.anchoredPosition = new Vector2(
                 perfectShotImage.anchoredPosition.x,
-                GetYFromFillAmount(shotInfo.perfectMin)
+                GetYFromFillAmount(shotInfo.perfectMin) + 5
             );
         }
     }
@@ -74,8 +77,7 @@ public class FillBarSystem : MonoBehaviour
         if (firstTouch.HasValue)
         {
             float distance = Vector2.Distance(firstTouch.Value, currentTouch);
-            float normalized = Mathf.Clamp01(distance / 2400f);
-
+            float normalized = Mathf.Clamp01(distance / (Screen.height - ScreenHeightOccupied));
             if (normalized > fillImage.fillAmount)
                 fillImage.fillAmount = normalized;
         }

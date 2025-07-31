@@ -2,6 +2,7 @@ using System.Collections;
 using System;
 using UnityEngine.UI;
 using UnityEngine;
+using Utility;
 
 public class UIGameTimer : GenericSingleton<UIGameTimer>
 {
@@ -22,8 +23,7 @@ public class UIGameTimer : GenericSingleton<UIGameTimer>
 
     void Start()
     {
-        playerTimer.fillAmount = 1f;
-        enemyTimer.fillAmount = 1f;
+        duration = GameManager.Instance.GetCurrentCampType().matchDuration;
 
         playerTimer.color = startColor;
         enemyTimer.color = startColor;

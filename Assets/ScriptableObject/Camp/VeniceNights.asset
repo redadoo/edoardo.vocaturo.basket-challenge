@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9fac5af6b0b4df54fbda36d7dc802593, type: 3}
+  m_Name: VeniceNights
+  m_EditorClassIdentifier: 
+  matchDuration: 80
+  matchRewardValue: 2000
+  matchAdmissionFee: 1000
+  enemyDifficulty: {fileID: 11400000, guid: 7fc50a1c52df0504fbbff4372b0c4b45, type: 2}

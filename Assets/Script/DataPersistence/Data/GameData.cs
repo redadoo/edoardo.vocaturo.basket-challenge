@@ -1,15 +1,25 @@
 using System;
 
-[Serializable]
-public class GameData
+namespace DataPersistance
 {
-    public string username;
-    public int money;
-    public int gold;
-    public GameData() 
+    /// <summary>
+    /// Represents the persistent data structure for saving and loading game state.
+    /// </summary>
+    [Serializable]
+    public class GameData
     {
-        username = "user_1234";
-        money = 0;
-        gold = 0;
+        public string username;
+        public int money;
+        public int gold;
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="GameData"/> with default values.
+        /// </summary>
+        public GameData() 
+        {
+            username = "user_1234";
+            money = 0;
+            gold = 0;
+        }
     }
 }

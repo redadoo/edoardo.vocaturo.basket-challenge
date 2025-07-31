@@ -1,7 +1,10 @@
-using UnityEngine.UI;
-using UnityEngine;
-using TMPro;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using AudioSystem;
+using Utility;
 
 public enum MenuPage
 {
@@ -10,71 +13,87 @@ public enum MenuPage
     Settings,
     SelectGameType,
     SelectCampType,
+    CreateMatchType,
     MatchInfo,
     MatchResult
 }
 
-public class UIMainMenu : MonoBehaviour
+public class UIMainMenu : GenericSingleton<UIMainMenu>
 {
+    [Header("Scripts")]
+    [SerializeField] private UIMatchResult uIMatchResult;
+
     [Header("Buttons")]
     [SerializeField] private Button playButton;
     [SerializeField] private Button gameTypeButton;
-    [SerializeField] private Button campTypeButton;
     [SerializeField] private Button backButton;
 
     [Header("Menu Panels")]
     [SerializeField] private GameObject mainMenuPanel;
     [SerializeField] private GameObject gameTypePanel;
     [SerializeField] private GameObject campTypePanel;
+    [SerializeField] private GameObject createCampTypePanel;
     [SerializeField] private GameObject matchInfoPanel;
     [SerializeField] private GameObject matchResultPanel;
 
-    [Header("3d Model")]
+    [Header("3D Model")]
     [SerializeField] private GameObject playerModel;
 
-    [Header("Currency")]
+    [Header("Currency UI")]
     [SerializeField] private TMP_Text moneyText;
     [SerializeField] private TMP_Text goldText;
 
-    private Dictionary<MenuPage, GameObject> menuPanels;
-    private Stack<MenuPage> navigationStack = new();
-    private MenuPage currentPage = MenuPage.None;
+    [Header("Sound Data")]
+    [SerializeField] private SoundData navigationSoundData;
+    [SerializeField] private SoundData backButtonSoundData;
 
-    private void Awake()
-    {
-        menuPanels = new Dictionary<MenuPage, GameObject>()
-        {
-            { MenuPage.Main, mainMenuPanel },
-            { MenuPage.SelectGameType, gameTypePanel },
-            { MenuPage.SelectCampType, campTypePanel },
-            { MenuPage.MatchInfo, matchInfoPanel },
-            { MenuPage.MatchResult, matchResultPanel }
-        };
-    }
+    private Dictionary<MenuPage, GameObject> menuPanels;
+    private readonly Stack<MenuPage> navigationStack = new();
+    private MenuPage currentPage = MenuPage.None;
 
     private void OnEnable()
     {
-        GameManager.Instance.OnMoneyChange += OnMoneyChange;
-    }
+        SetupMenuPanelDictionary();
 
-    private void OnDisable()
-    {
-        GameManager gm = GameManager.TryGetInstance();
-        if (gm != null)
-            gm.OnMoneyChange -= OnMoneyChange;
+        if (GameManager.TryGetInstance() != null)
+            GameManager.Instance.OnMoneyChange += OnMoneyChange;
+
+        if (LoadingSceneManager.TryGetInstance() != null)
+            LoadingSceneManager.Instance.OnSceneChange += OnSceneChange;
     }
 
     private void Start()
     {
         SetButtons();
-        NavigateTo(MenuPage.Main, false);
+        NavigateTo(MenuPage.Main, clearHistory: true);
+    }
+
+    private void OnDisable()
+    {
+        if (GameManager.TryGetInstance() != null)
+            GameManager.Instance.OnMoneyChange -= OnMoneyChange;
+
+        if (LoadingSceneManager.TryGetInstance() != null)
+            LoadingSceneManager.Instance.OnSceneChange -= OnSceneChange;
+    }
+
+    private void SetupMenuPanelDictionary()
+    {
+        menuPanels = new Dictionary<MenuPage, GameObject>
+        {
+            { MenuPage.Main, mainMenuPanel },
+            { MenuPage.SelectGameType, gameTypePanel },
+            { MenuPage.SelectCampType, campTypePanel },
+            { MenuPage.CreateMatchType, createCampTypePanel },
+            { MenuPage.MatchInfo, matchInfoPanel },
+            { MenuPage.MatchResult, matchResultPanel }
+        };
     }
 
     private void SetButtons()
     {
         playButton.onClick.AddListener(() => NavigateTo(MenuPage.SelectGameType));
         gameTypeButton.onClick.AddListener(() => NavigateTo(MenuPage.SelectCampType));
-        campTypeButton.onClick.AddListener(() => NavigateTo(MenuPage.MatchInfo));
         backButton.onClick.AddListener(OnBackPressed);
     }
 
@@ -83,20 +102,29 @@ public class UIMainMenu : MonoBehaviour
         if (currentPage == newPage)
             return;
 
-        if (clearHistory) navigationStack.Clear();
-        else navigationStack.Push(currentPage);
+        if (clearHistory)
+            navigationStack.Clear();
+        else if (currentPage != MenuPage.None)
+            navigationStack.Push(currentPage);
 
         currentPage = newPage;
         UpdateUI();
+
+        SoundManager.Instance.CreateSound()
+            .WithSoundData(navigationSoundData)
+            .Play();
     }
 
     private void UpdateUI()
     {
-        foreach (var val in menuPanels)
-            val.Value.SetActive(val.Key == currentPage);
-        
+        foreach (var pair in menuPanels)
+            pair.Value.SetActive(pair.Key == currentPage);
+
         playerModel.SetActive(currentPage == MenuPage.Main || currentPage == MenuPage.MatchInfo);
         backButton.gameObject.SetActive(currentPage != MenuPage.Main);
+
+        if (currentPage == MenuPage.MatchResult)
+            OnMoneyChange();
     }
 
     private void OnBackPressed()
@@ -106,28 +134,43 @@ public class UIMainMenu : MonoBehaviour
             MenuPage previousPage = navigationStack.Pop();
             currentPage = previousPage;
             UpdateUI();
+
+            SoundManager.Instance.CreateSound()
+                .WithSoundData(backButtonSoundData)
+                .Play();
         }
+    }
+
+    private void OnSceneChange(object sender, Scene e)
+    {
+        if (e == Scene.MainMenu)
+            StartCoroutine(WaitForMatchResultAndNavigate());
+    }
+
+    private IEnumerator WaitForMatchResultAndNavigate()
+    {
+        yield return new WaitUntil(() => uIMatchResult != null);
+        yield return null;
+
+        NavigateTo(MenuPage.MatchResult);
     }
 
     private void OnMoneyChange()
     {
-        moneyText.text = GameManager.Instance.money.ToString();
-        goldText.text = GameManager.Instance.gold.ToString();
+        moneyText.text = GameManager.Instance?.money.ToString() ?? "0";
+        goldText.text = GameManager.Instance?.gold.ToString() ?? "0";
     }
 
-    #region Editor Helpers
+    #region Editor Context Menus
 
     [ContextMenu("GoToMain")]
-    private void GoToMain() => 
-        NavigateTo(MenuPage.Main, clearHistory: true);
+    private void GoToMain() => NavigateTo(MenuPage.Main, clearHistory: true);
 
     [ContextMenu("GoToSelectGameType")]
-    private void GoToSelectGameType() =>
-        NavigateTo(MenuPage.SelectGameType);
+    private void GoToSelectGameType() => NavigateTo(MenuPage.SelectGameType);
 
     [ContextMenu("GoToSelectCampType")]
-    private void GoToSelectCampType() => 
-        NavigateTo(MenuPage.SelectCampType);
+    private void GoToSelectCampType() => NavigateTo(MenuPage.SelectCampType);
 
     #endregion
 }

@@ -1,20 +1,26 @@
 using UnityEngine;
 
+/// <summary>
+/// Handles player-controlled shooting behavior, including input events, charge timing, 
+/// UI feedback, and interaction with the shot mechanics.
+/// </summary>
 public class PlayerShooterController : ShooterController
 {
-    [Header("Reference")]
+    [Header("References")]
     [SerializeField] private FillBarSystem fillBarSystem;
     [SerializeField] private TrailSystem trailSystem;
+    [SerializeField] private UIFireball uiFireball;
 
     [Header("Shot Timer")]
-    [SerializeField] private bool isPressed;
-    [SerializeField] private bool isTimerRunning = false;
     [SerializeField] private float timerDuration = 1f;
     [SerializeField] private float currentTimer = 0f;
 
+    private bool isBallOnFire;
 
     protected override void OnEnable()
     {
+        isPlayer = true;
+
         base.OnEnable();
 
         if (InputManager.Instance != null)
@@ -22,13 +28,16 @@ public class PlayerShooterController : ShooterController
             InputManager.Instance.OnClickStartNotOverUI += OnClickStartNotOverUI;
             InputManager.Instance.OnClickCanceledNotOverUI += OnClickCanceledNotOverUI;
         }
+       
+        if (uiFireball != null)
+        {
+            uiFireball.OnFireballStart += OnStartFireBall;
+            uiFireball.OnFireballEnd += OnEndFireBall;
+        }
     }
 
     private void Update()
     {
-        if (!isPossibleToShoot)
-            return;
-
         HandleTimer();
     }
 
@@ -48,99 +57,113 @@ public class PlayerShooterController : ShooterController
     {
         base.Init(shotInfo);
 
-        trailSystem.ChangeTrailState(true);
-        fillBarSystem.ChangeStatus(true);
+        SetComponentState(true);
         fillBarSystem.SetShotRange(currentShotInfo);
-        transform.position = currentShotInfo.shotPositions[pointScored].transform.position;
-        transform.rotation = currentShotInfo.shotPositions[pointScored].transform.rotation;
     }
 
+    /// <summary>
+    /// Called when the ball hits the floor. Resets components and shows miss feedback.
+    /// </summary>
     protected override void OnBallHitFloor()
     {
-
-        if (pointScored != 0 && pointScored % 3 == 0 && currentPositionIndex < 2)
+        if (state != ShooterState.Scored)
         {
-            currentPositionIndex++;
-            currentShotInfo = shootingManager.GetShotRange(currentPositionIndex);
-            pointScored = 0;
+            uiFireball.OnShotMissed();
+            isBallOnFire = false;
         }
-    
+
+        base.OnBallHitFloor();
+
         fillBarSystem.SetShotRange(currentShotInfo);
-        if (hasScored && pointScored < currentShotInfo.shotPositions.Count)
-        {
-            transform.position = currentShotInfo.shotPositions[pointScored].transform.position;
-            transform.rotation = currentShotInfo.shotPositions[pointScored].transform.rotation;
-        }
-
         fillBarSystem.ResetValue();
-        currentTimer = 0;
-        isTimerRunning = false;
-        isPossibleToShoot = true;
-
-        hasScored = false;
+        currentTimer = 0f;
     }
 
     protected override void OnBallScored()
     {
         base.OnBallScored();
-        hasScored = true;
-        UIGameplay.Instance.IncreaseScore(true, points);
+
+        if (isBallOnFire) pointScoredLastTime *= 2;
+        else uiFireball.OnShotMade(pointScoredLastTime);
+
+        points += pointScoredLastTime + bonusPoints;
+
+        UIFeedback.Instance.ShowScore(isPlayer, pointScoredLastTime + bonusPoints);
+        UIGameplay.Instance.UpdateScore(isPlayer, points);
     }
 
+    private void OnStartFireBall()
+    {
+        isBallOnFire = true;
+    }
+
+    private void OnEndFireBall()
+    {
+        isBallOnFire = false;
+    }
+
+    /// <summary>
+    /// Handles the countdown timer during shot charging. Shoots automatically when time is up.
+    /// </summary>
     private void HandleTimer()
     {
-        if (!isTimerRunning)
+        if (state != ShooterState.Charging)
             return;
 
         currentTimer += Time.deltaTime;
 
         if (currentTimer >= timerDuration)
         {
-            trailSystem.ChangeTrailState(false);
-            isTimerRunning = false;
-            ballSystem.ShootBall(ShotType.PerfectShot, currentShotInfo);
-            isPossibleToShoot = false;
-            fillBarSystem.ChangeStatus(false);
-            isPressed = false;
-        }
-    }
-
-    private void OnClickStartNotOverUI()
-    {
-        if (!isPressed && isPossibleToShoot)
-        {
-            trailSystem.ChangeTrailState(true);
-            fillBarSystem.ChangeStatus(true);
-            isPressed = true;
-            isTimerRunning = true;
-        }
-    }
-
-    private void OnClickCanceledNotOverUI()
-    {
-        if (isPressed && isPossibleToShoot)
-        {
+            SetComponentState(false);
+            state = ShooterState.Shot;
             shotType = currentShotInfo.GetShotType(fillBarSystem.GetFillAmount());
             ballSystem.ShootBall(shotType, currentShotInfo);
-            hasScored = false;
-            isPossibleToShoot = false;
-            fillBarSystem.ChangeStatus(false);
-            trailSystem.ChangeTrailState(false);
-            isPressed = false;
+            currentTimer = 0f;
         }
     }
 
-    public void ResetValue()
+    /// <summary>
+    /// Triggered when the player begins a click (not over UI). Starts charging the shot.
+    /// </summary>
+    private void OnClickStartNotOverUI()
     {
-        hasScored = false;
-        isPossibleToShoot = false;
-        isPressed = false;
-        fillBarSystem.ChangeStatus(false);
-        trailSystem.ChangeTrailState(false);
-        transform.SetPositionAndRotation
-        (
-            currentShotInfo.shotPositions[0].transform.position, 
-            currentShotInfo.shotPositions[0].transform.rotation
-        );
+        if (state == ShooterState.Dribbling)
+        {
+            state = ShooterState.Charging;
+            SetComponentState(true);
+        }
+    }
+
+    /// <summary>
+    /// Triggered when the player releases a click (not over UI). Calculates shot type and shoots.
+    /// </summary>
+    private void OnClickCanceledNotOverUI()
+    {
+        if (state == ShooterState.Charging)
+        {
+            SetComponentState(false);
+            state = ShooterState.Shot;
+            shotType = currentShotInfo.GetShotType(fillBarSystem.GetFillAmount());
+            ballSystem.ShootBall(shotType, currentShotInfo);
+        }
+    }
+
+    /// <summary>
+    /// Enables or disables visual components related to shot charging (fill bar, trail).
+    /// </summary>
+    /// <param name="active">Whether components should be active.</param>
+    private void SetComponentState(bool active)
+    {
+        fillBarSystem.ChangeStatus(active);
+        trailSystem.ChangeTrailState(active);
+    }
+
+    /// <summary>
+    /// Resets the shooter's state and visual elements to default.
+    /// </summary>
+    public override void ResetValue()
+    {
+        base.ResetValue();
+        SetComponentState(false);
     }
 }

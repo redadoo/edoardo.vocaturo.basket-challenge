@@ -1,41 +1,49 @@
 using System.Collections;
 using UnityEngine;
+using AudioSystem;
 using TMPro;
 
 public class UIMatchInfo : MonoBehaviour
 {
-    [Header("Currency")]
+    [Header("Match Settings")]
     [SerializeField] private TMP_Text playerFee;
     [SerializeField] private TMP_Text enemyFee;
     [SerializeField] private TMP_Text totalReward;
+    [SerializeField] private CampTypeSO campTypeSO;
+    [SerializeField] private int initialFeeValue;
+    [SerializeField] private int initialRewardValue;
 
     [Header("Animation Settings")]
-    [SerializeField] private float transferDuration = 2f;
+    [SerializeField] private float transferDuration;
 
-    private const int initialFeeValue = 250;
-    private const int initialRewardValue = 0;
+    [Header("SoundData")]
+    [SerializeField] private SoundData moneySoundData;
+
 
     private Coroutine transferCoroutine;
 
     private void OnEnable()
     {
         SetTextBoxToInitialValue();
+
         transferCoroutine = StartCoroutine(TransferCurrency());
+
+        SoundManager.Instance.CreateSound()
+            .WithSoundData(moneySoundData)
+            .Play();
     }
 
     private void OnDisable()
     {
         if (transferCoroutine != null)
             StopCoroutine(transferCoroutine);
-
-        ResetValues();
     }
 
     private IEnumerator TransferCurrency()
     {
-        int player = initialFeeValue;
         int enemy = initialFeeValue;
-        int total = initialRewardValue;
+        int player = initialFeeValue;
+        int total = 0;
         int totalToTransfer = player + enemy;
         float stepDuration = transferDuration / totalToTransfer;
 
@@ -58,19 +66,21 @@ public class UIMatchInfo : MonoBehaviour
             yield return new WaitForSeconds(stepDuration);
         }
 
-        GameManager.Instance.DecreaseMoney(250);
+        GameManager.Instance.ChangeMoney(-campTypeSO.matchAdmissionFee);
         LoadingSceneManager.Instance.LoadScene(Scene.Gameplay);
-    }
-
-    private void ResetValues()
-    {
-        playerFee.text = initialFeeValue.ToString();
-        enemyFee.text = initialFeeValue.ToString();
-        totalReward.text = initialRewardValue.ToString();
     }
 
     private void SetTextBoxToInitialValue()
     {
-        ResetValues();
+        transferDuration = 1;
+
+        campTypeSO = GameManager.Instance.GetCurrentCampType();
+        initialFeeValue = campTypeSO.matchAdmissionFee;
+        initialRewardValue = campTypeSO.matchRewardValue;
+
+        playerFee.text = initialFeeValue.ToString();
+        enemyFee.text = initialFeeValue.ToString();
+
+        totalReward.text = "";
     }
 }
