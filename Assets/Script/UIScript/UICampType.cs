@@ -17,24 +17,13 @@ public class UICampType : MonoBehaviour
     {
         for (int i = 0; i < campButtons.Count; i++)
         {
-            if (campButtons[i] != null)
-            {
                 AssignCampButton(i, campButtons[i]);
-            }
-            else
-            {
-                Debug.LogWarning($"Camp button at index {i} is null.");
-            }
         }
 
         if (createMatchTypeButton != null)
         {
             createMatchTypeButton.onClick.AddListener(() =>
                 UIMainMenu.Instance.NavigateTo(MenuPage.CreateMatchType));
-        }
-        else
-        {
-            Debug.LogWarning("CreateMatchTypeButton is not assigned.");
         }
     }
 
@@ -45,10 +34,11 @@ public class UICampType : MonoBehaviour
     {
         button.onClick.AddListener(() =>
         {
+            GameManager.Instance.SetMatchInfo(index);
+
             if (!GameManager.Instance.HasEnoughMoneyForFee())
                 return;
 
-            GameManager.Instance.SetMatchInfo(index);
             UIMainMenu.Instance.NavigateTo(MenuPage.MatchInfo);
         });
     }
