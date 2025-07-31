@@ -41,6 +41,7 @@ Upon pressing Play, the player is presented with a **camp selection screen**:
 
 - [ ] Clear and refactor existing code  
 - [ ] Add mouse input support (desktop version)  
-- [ ] Add audio settings 
+- [ ] Add audio settings
+- [ ] Finish xml documentation
 
 ---
