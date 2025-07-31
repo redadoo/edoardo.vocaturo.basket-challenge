@@ -1,11 +1,9 @@
-using System;
 using System.Collections.Generic;
+using DataPersistance;
 using UnityEngine;
 using AudioSystem;
 using Utility;
-using DataPersistance;
-using System.Reflection;
-using Unity.VisualScripting;
+using System;
 
 /// <summary>
 /// Manages core game state such as money, match info, and audio.
@@ -106,6 +104,7 @@ public class GameManager : PersistentSingleton<GameManager>, IDataPersistence
     {
         if (amount == 0) return;
 
+        
         if (amount > 0)
             money = (money > int.MaxValue - amount) ? int.MaxValue : money + amount;
         else
@@ -114,10 +113,16 @@ public class GameManager : PersistentSingleton<GameManager>, IDataPersistence
         OnMoneyChange?.Invoke();
     }
 
+    public void GiveMoneyReward()
+    {
+        ChangeMoney(currentCampType.matchRewardValue);
+    }
+
     public void LoadData(GameData data)
     {
         money = data.money;
         gold = data.gold;
+
         OnMoneyChange?.Invoke();
     }
 

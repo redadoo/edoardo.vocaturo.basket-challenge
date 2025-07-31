@@ -61,16 +61,16 @@ namespace UIScript
         {
             SetupMenuPanelDictionary();
             SetButtons();
-        }
 
-        private void Start()
-        {
             if (GameManager.TryGetInstance() != null)
                 GameManager.Instance.OnMoneyChange += OnMoneyChange;
 
             if (LoadingSceneManager.TryGetInstance() != null)
                 LoadingSceneManager.Instance.OnSceneChange += OnSceneChange;
+        }
 
+        private void Start()
+        {
             NavigateTo(MenuPage.Main, clearHistory: true);
         }
 
@@ -188,8 +188,8 @@ namespace UIScript
         /// </summary>
         private void OnMoneyChange()
         {
-            moneyText.text = GameManager.Instance?.money.ToString() ?? "0";
-            goldText.text = GameManager.Instance?.gold.ToString() ?? "0";
+            moneyText.text = GameManager.Instance.money.ToString();
+            goldText.text = GameManager.Instance.gold.ToString();
         }
 
         #region Editor Context Menus

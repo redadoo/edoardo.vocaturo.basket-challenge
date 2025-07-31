@@ -78,7 +78,7 @@ namespace UIScript
             if (shootingManager.IsPlayerWinner())
             {
                 finalMessage.text = "You won";
-                GameManager.Instance.ChangeMoney(500);
+                GameManager.Instance.GiveMoneyReward();
             }
             else
             {

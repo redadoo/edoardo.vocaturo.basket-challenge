@@ -24,11 +24,6 @@ namespace DataPersistance
         private List<IDataPersistence> dataPersistenceObjects;
         private FileDataHandler dataHandler;
 
-        private void OnEnable()
-        {
-            LoadingSceneManager.Instance.OnSceneChange += OnSceneChange;
-        }
-
         public void Start()
         {
             if (save)
@@ -104,16 +99,5 @@ namespace DataPersistance
 
             return new List<IDataPersistence>(dataPersistenceObjects);
         }
-
-        /// <summary>
-        /// Reloads game data when returning to the main menu scene.
-        /// </summary>
-        private void OnSceneChange(object sender, Scene e)
-        {
-            if (e == Scene.MainMenu)
-                LoadGame();
-        }
-
     }
-
 }

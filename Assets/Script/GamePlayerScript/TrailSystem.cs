@@ -38,6 +38,11 @@ public class TrailSystem : MonoBehaviour
             return;
 
         Vector2 screenPos = InputManager.Instance.touchPos;
+
+        // Skip processing if the screen position is invalid (e.g. after screen resize)
+        if (!IsValidScreenPosition(screenPos))
+            return;
+
         float depth = Mathf.Abs(mainCamera.transform.position.x - TrailXPosition);
 
         Vector3 worldPos = mainCamera.ScreenToWorldPoint(new Vector3(screenPos.x, screenPos.y, depth));
@@ -45,6 +50,12 @@ public class TrailSystem : MonoBehaviour
 
         if (!trailRenderer.emitting)
             trailRenderer.emitting = true;
+    }
+
+    private bool IsValidScreenPosition(Vector2 pos)
+    {
+        return !(float.IsNaN(pos.x) || float.IsNaN(pos.y) ||
+                 float.IsInfinity(pos.x) || float.IsInfinity(pos.y));
     }
 
     /// <summary>
