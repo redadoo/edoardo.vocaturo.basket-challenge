@@ -82,16 +82,32 @@ public class PlayerShooterController : ShooterController
 
     protected override void OnBallScored()
     {
-        base.OnBallScored();
+        switch (shotType)
+        {
+            case ShotType.PerfectShot:
+                pointScoredLastTime = PerfectShotPoints;
+                break;
 
-        if (isBallOnFire) pointScoredLastTime *= 2;
-        else uiFireball.OnShotMade(pointScoredLastTime);
+            case ShotType.NormalShot:
+                pointScoredLastTime = HighShotPoints;
+                break;
 
-        points += pointScoredLastTime + bonusPoints;
-        bonusPoints = 0;
+            default:
+                return;
+        }
 
-        UIFeedback.Instance.ShowScore(isPlayer, pointScoredLastTime + bonusPoints);
-        UIGameplay.Instance.UpdateScore(isPlayer, points);
+        state = ShooterState.Scored;
+        pointScored++;
+
+        pointScoredLastTime = (pointScoredLastTime + bonusPoints);
+        
+        if (isBallOnFire)
+            pointScoredLastTime *= 2;
+        else
+            uiFireball.OnShotMade(pointScoredLastTime);
+
+        points += pointScoredLastTime;
+        HandleScoreFeedback();
     }
 
     /// <summary>

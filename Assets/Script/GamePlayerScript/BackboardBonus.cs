@@ -23,7 +23,6 @@ public class BackboardBonus : MonoBehaviour
 
     private void Start()
     {
-        //backboardMaterial = GetComponent<MeshRenderer>().material;
         DeactivateBonus();
 
         InitializeBonusColors();
@@ -50,9 +49,9 @@ public class BackboardBonus : MonoBehaviour
         {
             yield return new WaitForSeconds(interval);
 
-            UIFeedback.Instance.ShowBackboardBonus();
             ActivateBonus();
-
+            UIFeedback.Instance.ShowBackboardBonus();
+            
             wasHit = false;
             yield return new WaitUntil(() => wasHit);
 
@@ -81,8 +80,9 @@ public class BackboardBonus : MonoBehaviour
     {
         if (backboardMaterial == null) return;
 
-        backboardMaterial.SetColor("_EmissionColor", Color.black);
-        backboardMaterial.DisableKeyword("_EMISSION");
+        Color currentColor = backboardMaterial.GetColor("_Color");
+        currentColor.a = 0f;
+        backboardMaterial.SetColor("_Color", currentColor);
 
         bonusText.gameObject.SetActive(false);
     }
@@ -92,8 +92,8 @@ public class BackboardBonus : MonoBehaviour
     /// </summary>
     private void SetEmission(Color color)
     {
-        backboardMaterial.EnableKeyword("_EMISSION");
-        backboardMaterial.SetColor("_EmissionColor", color * 2f);
+        Color colorWithAlpha = new Color(color.r, color.g, color.b, 1f);
+        backboardMaterial.SetColor("_Color", colorWithAlpha);
     }
 
     /// <summary>

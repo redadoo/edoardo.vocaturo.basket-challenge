@@ -29,6 +29,7 @@ public class BallSystem : MonoBehaviour
 
     public event Action OnBallHitFloor;
     public event Action OnBallScored;
+    public event Action OnShotBall;
     public event Action<BackboardBonus> OnBackboardHit;
 
     private void Start()
@@ -96,6 +97,8 @@ public class BallSystem : MonoBehaviour
 
         Vector3 launchVelocity = CalculateLaunchVelocity(targetPosition, transform.position, shotAngle);
         rb.AddForce(launchVelocity, ForceMode.VelocityChange);
+
+        OnShotBall?.Invoke();
     }
 
     /// <summary>

@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dea5378956eefe449ac767fce1a06eab, type: 3}
-  m_Name: LongShot
+  m_Name: MediumShot
   m_EditorClassIdentifier: 
-  perfectMin: 0.6
-  perfectMax: 0.7
-  perfectShotAngle: 75
+  perfectMin: 0.5
+  perfectMax: 0.6
+  perfectShotAngle: 70
   tolerance: 0.05
-  highMin: 0.8
-  highMax: 0.9
-  highShotAngle: 75
+  highMin: 0.7
+  highMax: 0.8
+  highShotAngle: 65
   shotPositions:
-  - {fileID: 3689224955050246743, guid: bdfe588f6d7f4994893ca2067e69d42e, type: 3}
-  - {fileID: 7146379682540899946, guid: c6d830843a8fa8742b136e5a2c452ae3, type: 3}
-  - {fileID: 1691748664741082525, guid: d120621e3dc185147a5af364ed6d77e3, type: 3}
+  - {fileID: 4281257877405124082, guid: 3718c3a535338c340b065a64319530df, type: 3}
+  - {fileID: 3980815788900968315, guid: f1cea9a7d53330f40836ddbbc83658bd, type: 3}
+  - {fileID: 5304036933961974452, guid: 9e14b6edf98e4e54f8f5d245f4f4430d, type: 3}

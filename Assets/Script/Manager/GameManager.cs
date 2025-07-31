@@ -119,6 +119,12 @@ public class GameManager : PersistentSingleton<GameManager>, IDataPersistence
         ChangeMoney(currentCampType.matchRewardValue);
     }
 
+    public void ResetLastMatchPoints()
+    {
+        playerLastMatchPoints = 0;
+        enemyLastMatchPoints = 0;
+    }
+
     public void LoadData(GameData data)
     {
         money = data.money;

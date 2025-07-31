@@ -8,7 +8,7 @@ namespace UIScript
     /// <summary>
     /// Manages the overall gameplay UI, including score display, countdown, results, and menu interactions.
     /// </summary>
-    public class UIGameplay : GenericSingleton<UIGameplay>
+    public class UIGameplay : MonoBehaviour
     {
         [Header("Managers")]
         [SerializeField] private ShootingManager shootingManager;
@@ -29,8 +29,6 @@ namespace UIScript
         [SerializeField] private GameObject resultPage;
 
         [Header("Score Texts")]
-        [SerializeField] private TMP_Text playerScoreText;
-        [SerializeField] private TMP_Text enemyScoreText;
         [SerializeField] private TMP_Text playerResultText;
         [SerializeField] private TMP_Text enemyResultText;
         [SerializeField] private TMP_Text finalMessage;
@@ -53,16 +51,6 @@ namespace UIScript
             ToggleGameplayUI(true);
         }
 
-        /// <summary>
-        /// Updates the score UI for either the player or the enemy.
-        /// </summary>
-        public void UpdateScore(bool isPlayer, int score)
-        {
-            if (isPlayer)
-                playerScoreText.text = score.ToString();
-            else
-                enemyScoreText.text = score.ToString();
-        }
 
         /// <summary>
         /// Handles the end of the game, updating UI and showing results.
@@ -72,8 +60,10 @@ namespace UIScript
             ToggleGameplayUI(false);
 
             resultPage.SetActive(true);
-            playerResultText.text = playerScoreText.text;
-            enemyResultText.text = enemyScoreText.text;
+            var score = UIScore.Instance.GetScore();
+
+            playerResultText.text = score.Item1;
+            enemyResultText.text = score.Item2;
 
             if (shootingManager.IsPlayerWinner())
             {

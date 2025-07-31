@@ -27,20 +27,6 @@ public class EnemyShooterController : ShooterController
     }
 
     /// <summary>
-    /// Called when the enemy scores. Updates the score and UI feedback.
-    /// </summary>
-    protected override void OnBallScored()
-    {
-        base.OnBallScored();
-
-        points += pointScoredLastTime + bonusPoints;
-        bonusPoints = 0;
-
-        UIFeedback.Instance.ShowScore(isPlayer, pointScoredLastTime + bonusPoints);
-        UIGameplay.Instance.UpdateScore(isPlayer, points);
-    }
-
-    /// <summary>
     /// Handles the timer logic for automated shooting.
     /// </summary>
     private void HandleShotTimer()

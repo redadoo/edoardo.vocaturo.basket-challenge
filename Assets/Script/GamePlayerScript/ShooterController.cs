@@ -1,5 +1,6 @@
 using AudioSystem;
 using System;
+using UIScript;
 using UnityEngine;
 
 /// <summary>
@@ -43,7 +44,6 @@ public abstract class ShooterController : MonoBehaviour
     protected bool isPlayer;
     public int points { get; protected set; }
 
-    
     protected virtual void OnEnable()
     {
         if (ballSystem == null) return;
@@ -88,6 +88,15 @@ public abstract class ShooterController : MonoBehaviour
     /// </summary>
     protected virtual void OnBallScored()
     {
+        HandleScoreCalculation();
+        HandleScoreFeedback();
+    }
+
+    /// <summary>
+    /// Handles the logic for calculating and updating the score based on shot type.
+    /// </summary>
+    protected virtual void HandleScoreCalculation()
+    {
         switch (shotType)
         {
             case ShotType.PerfectShot:
@@ -104,6 +113,19 @@ public abstract class ShooterController : MonoBehaviour
 
         state = ShooterState.Scored;
         pointScored++;
+        points += pointScoredLastTime + bonusPoints;
+    }
+
+    /// <summary>
+    /// Handles UI and sound feedback after scoring.
+    /// </summary>
+    protected virtual void HandleScoreFeedback()
+    {
+        UIFeedback.Instance.ShowScore(isPlayer, pointScoredLastTime + bonusPoints, shotType == ShotType.PerfectShot);
+        UIScore.Instance.UpdateScore(isPlayer, points);
+
+        bonusPoints = 0;
+        pointScoredLastTime = 0;
 
         SoundManager.Instance.CreateSound()
             .WithSoundData(basketSound)
@@ -117,8 +139,11 @@ public abstract class ShooterController : MonoBehaviour
     {
         if (shotType != ShotType.NormalShot) return;
 
-        bonusPoints = backboard.GetBonusValue();
-        backboard.wasHit = true;
+        if (!backboard.wasHit)
+        {
+            bonusPoints = backboard.GetBonusValue();
+            backboard.wasHit = true;
+        }
     }
 
     /// <summary>

@@ -44,19 +44,19 @@ namespace UIScript
         /// <summary>
         /// Displays the score feedback based on whether it was the player or the enemy who scored.
         /// </summary>
-        public void ShowScore(bool isPlayer, int points)
+        public void ShowScore(bool isPlayer, int points, bool isPefectShot)
         {
-            if (isPlayer) ShowPlayerScore(points);
-            else ShowEnemyScore(points);
+            if (isPlayer) ShowPlayerScore(points, isPefectShot);
+            else ShowEnemyScore(points, isPefectShot);
         }
 
         /// <summary>
         /// Displays the score message for the enemy.
         /// </summary>
-        private void ShowEnemyScore(int points)
+        private void ShowEnemyScore(int points, bool isPefectShot)
         {
             enemyTextBox.text = GetPointsString(points);
-            enemyTextBox.color = points == PerfectShotScore ? Color.green : Color.yellow;
+            enemyTextBox.color = isPefectShot == true ? Color.green : Color.yellow;
             enemyTextBox.gameObject.SetActive(true);
 
             StartCoroutine(FadeAndHide(enemyTextBox.gameObject));
@@ -65,11 +65,11 @@ namespace UIScript
         /// <summary>
         /// Displays the score popup for the player.
         /// </summary>
-        private void ShowPlayerScore(int points)
+        private void ShowPlayerScore(int points, bool isPefectShot)
         {
             popupGameObject.SetActive(true);
 
-            if (points == PerfectShotScore)
+            if (isPefectShot)
             {
                 playerFirstTextBox.text = PerfectShotMessage;
                 playerFirstTextBox.color = Color.green;

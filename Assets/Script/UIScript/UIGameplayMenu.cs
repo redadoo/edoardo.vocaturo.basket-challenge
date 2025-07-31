@@ -62,7 +62,6 @@ namespace UIScript
         /// </summary>
         private void OpenOptionsMenu()
         {
-            // TODO: Implement options menu logic
         }
 
         /// <summary>
@@ -79,7 +78,10 @@ namespace UIScript
         /// </summary>
         private void QuitMatch()
         {
+            GameManager.Instance.ResetLastMatchPoints();
+            
             CloseAllPanels();
+            
             LoadingSceneManager.Instance.LoadScene(Scene.MainMenu);
         }
 
