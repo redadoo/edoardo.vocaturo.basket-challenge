@@ -17,10 +17,12 @@ namespace AudioSystem
         [SerializeField] private int maxPoolSize = 100;
         [SerializeField] private int maxSoundInstaces = 30;
 
-        private void Start()
+
+        private void OnEnable()
         {
             InitializePool();
         }
+
 
         public SoundBuilder CreateSound() => 
             new(this);

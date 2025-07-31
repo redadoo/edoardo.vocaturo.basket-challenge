@@ -60,17 +60,17 @@ namespace UIScript
         private void OnEnable()
         {
             SetupMenuPanelDictionary();
+            SetButtons();
+        }
 
+        private void Start()
+        {
             if (GameManager.TryGetInstance() != null)
                 GameManager.Instance.OnMoneyChange += OnMoneyChange;
 
             if (LoadingSceneManager.TryGetInstance() != null)
                 LoadingSceneManager.Instance.OnSceneChange += OnSceneChange;
-        }
 
-        private void Start()
-        {
-            SetButtons();
             NavigateTo(MenuPage.Main, clearHistory: true);
         }
 

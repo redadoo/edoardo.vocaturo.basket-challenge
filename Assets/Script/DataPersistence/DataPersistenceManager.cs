@@ -26,7 +26,7 @@ namespace DataPersistance
 
         private void OnEnable()
         {
-            LoadingSceneManager.instance.OnSceneChange += OnSceneChange;
+            LoadingSceneManager.Instance.OnSceneChange += OnSceneChange;
         }
 
         public void Start()

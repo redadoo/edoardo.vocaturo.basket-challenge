@@ -89,6 +89,10 @@ public class InputManager : PersistentSingleton<InputManager>
         };
 
         List<RaycastResult> results = new();
+
+        if (graphicRaycaster == null)
+            FindReference();
+
         graphicRaycaster.Raycast(pointerData, results);
         return results.Count > 0;
     }
@@ -111,4 +115,7 @@ public class InputManager : PersistentSingleton<InputManager>
     /// </summary>
     private void OnSceneChange(object sender, Scene e) =>
         FindReference();
+
+    public bool IsPressedNotOverUi() =>
+         inputActions.Player.OnClick.IsPressed() && !IsPointerOverUI();
 }

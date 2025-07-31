@@ -34,7 +34,7 @@ public class TrailSystem : MonoBehaviour
     /// </summary>
     private void UpdateTrailPosition()
     {
-        if (InputManager.Instance == null || !InputManager.Instance.inputActions.Player.OnClick.IsPressed())
+        if (InputManager.Instance == null || !InputManager.Instance.IsPressedNotOverUi())
             return;
 
         Vector2 screenPos = InputManager.Instance.touchPos;
