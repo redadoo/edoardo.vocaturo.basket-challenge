@@ -1,6 +1,8 @@
 # edoardo.vocaturo.basket-challenge
 
-Welcome to the **Basket Challenge** — a technical game development challenge focused on recreating the core gameplay loop of Miniclip's mobile game [*Basketball Stars*](https://www.miniclip.com/games/basketball-stars).
+Welcome to the **Basket Challenge** a two week technical game development challenge focused on recreating the core gameplay loop of Miniclip’s mobile game [*Basketball Stars*](https://www.miniclip.com/games/basketball-stars).
+
+This project is being built using **Unity 2021.3.4f1**
 
 ## Objective
 
@@ -47,8 +49,10 @@ After selecting the **Shots** mode, the player is taken to a **camp selection sc
 ## To-Do List
 
 - [ ] Clear and refactor existing code  
-- [ ] Add mouse input support (desktop version)  
 - [ ] Add audio settings
-- [ ] Finish xml documentation
 
+## Known Issues
+
+- **Sometimes a backboard bonus feedback appears even when the bonus is not active**
+- **Shot parable is too high — trajectory appears exaggerated**  
 ---
