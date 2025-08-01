@@ -4,6 +4,7 @@ Welcome to the **Basket Challenge** a two week technical game development challe
 
 This project is being built using **Unity 2021.3.4f1**
 
+---
 ## Objective
 
 - Swipe-based shooting mechanics  
@@ -50,6 +51,7 @@ After selecting the **Shots** mode, the player is taken to a **camp selection sc
 
 - [ ] Clear and refactor existing code  
 - [ ] Add audio settings
+---
 
 ## Known Issues
 
